@@ -1,0 +1,17 @@
+@model ImageGallery.ViewModels.ImageAddViewModel
+           
+<h1>@Html.TitleForPage(T("Add Images").ToString())</h1>
+
+@using (Html.BeginForm("AddImages", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" })) {
+    @Html.ValidationSummary()
+    <fieldset>
+        <input id="ImageFile" name="ImageFile" type="file" value="@T("Browse")" size="64"/> 
+        @Html.HiddenFor(o => o.ImageGalleryName)
+
+        <span class="hint">@T("After your files have been uploaded, you can edit the titles and descriptions.")</span>
+    </fieldset>
+    <fieldset>
+        <button class="primaryAction" type="submit">@T("Upload")</button>
+        @Html.AntiForgeryTokenOrchard()
+    </fieldset>
+}

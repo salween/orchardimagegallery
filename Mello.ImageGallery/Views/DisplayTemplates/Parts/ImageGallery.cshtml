@@ -1,0 +1,27 @@
+﻿@using Mello.ImageGallery.Helpers
+@using System.Web.Mvc.Html
+@{ Style.Require("ImageGallery"); }
+
+@model Mello.ImageGallery.ViewModels.ImageGalleryViewModel
+
+<script type="text/javascript">
+    $(document).ready(function () {        
+        @(Html.Lightbox("#gallery a", Model.PluginSettings))
+    });
+</script>
+
+<div id="gallery">
+    <ul>
+        @foreach (var image in Model.Images)
+        {
+        <li>
+            <a href="@image.PublicUrl" title="@image.Caption">
+                <img src="@image.ThumbnailPublicUrl" alt="@image.Caption" />
+            </a>            
+        </li>
+        }                     
+    </ul>     
+</div>
+
+
+
