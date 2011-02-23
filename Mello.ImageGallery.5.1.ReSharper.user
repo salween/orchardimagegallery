@@ -1,0 +1,33 @@
+<Configuration>
+  <SettingsComponent>
+    <string />
+    <integer />
+    <boolean>
+      <setting name="SolutionAnalysisEnabled">False</setting>
+    </boolean>
+  </SettingsComponent>
+  <RecentFiles>
+    <RecentFiles>
+      <File id="EACC1A53-532B-486B-BC51-BA65ACBA2B61/f:Migrations.cs" caret="169" fromTop="5" />
+      <File id="EACC1A53-532B-486B-BC51-BA65ACBA2B61/f:AdminMenu.cs" caret="83" fromTop="3" />
+      <File id="EACC1A53-532B-486B-BC51-BA65ACBA2B61/f:ResourceManifest.cs" caret="29" fromTop="1" />
+      <File id="EACC1A53-532B-486B-BC51-BA65ACBA2B61/f:Permissions.cs" caret="1417" fromTop="39" />
+      <File id="EACC1A53-532B-486B-BC51-BA65ACBA2B61/f:Module.txt" caret="0" fromTop="0" />
+    </RecentFiles>
+    <RecentEdits>
+      <File id="EACC1A53-532B-486B-BC51-BA65ACBA2B61/f:Permissions.cs" caret="1417" fromTop="39" />
+      <File id="EACC1A53-532B-486B-BC51-BA65ACBA2B61/f:AdminMenu.cs" caret="83" fromTop="3" />
+      <File id="EACC1A53-532B-486B-BC51-BA65ACBA2B61/f:ResourceManifest.cs" caret="55" fromTop="2" />
+    </RecentEdits>
+  </RecentFiles>
+  <NAntValidationSettings>
+    <NAntPath value="" />
+  </NAntValidationSettings>
+  <UnitTestRunner>
+    <Providers />
+  </UnitTestRunner>
+  <UnitTestRunnerNUnit>
+    <NUnitInstallDir>C:\Program Files\NUnit 2.5.9\bin\net-2.0\</NUnitInstallDir>
+    <UseAddins>Never</UseAddins>
+  </UnitTestRunnerNUnit>
+</Configuration>

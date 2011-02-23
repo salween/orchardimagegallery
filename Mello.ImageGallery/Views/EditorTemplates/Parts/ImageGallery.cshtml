@@ -1,0 +1,15 @@
+﻿@model Mello.ImageGallery.Models.ImageGalleryPart
+<fieldset>
+    <div>
+        @Html.LabelFor(o => o.MediaPath, @T("Image gallery"))
+    </div>
+    <div>
+        @if (Model.HasAvailableGalleries)
+        {
+            @Html.DropDownListFor(o => o.SelectedGallery, Model.AvailableGalleries)
+        }
+        else{
+            @T("You need first to create an image gallery on Image Gallery menu")
+        }
+    </div>
+</fieldset>
