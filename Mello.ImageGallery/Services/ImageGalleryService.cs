@@ -92,8 +92,8 @@ namespace Mello.ImageGallery.Services {
             return null;
         }
 
-        public void AddImage(string imageGalleryName, HttpPostedFileBase imageFile) {
-            _mediaService.UploadMediaFile(GetMediaPath(imageGalleryName), imageFile, false);
+        public void AddImage(string imageGalleryName, HttpPostedFileBase imageFile) {          
+          _mediaService.UploadMediaFile(GetMediaPath(imageGalleryName), imageFile, false);
         }
 
         public void UpdateImageProperties(string imageGalleryName, string imageName, string imageCaption) {

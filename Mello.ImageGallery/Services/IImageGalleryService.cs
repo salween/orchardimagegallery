@@ -15,7 +15,7 @@ namespace Mello.ImageGallery.Services {
 
         //IEnumerable<ImageGalleryImage> GetImages();
         ImageGalleryImage GetImage(string galleryName, string imageName);
-        void AddImage(string imageGalleryName, System.Web.HttpPostedFileBase imageFile);
+        void AddImage(string imageGalleryName, HttpPostedFileBase imageFile);
         void UpdateImageProperties(string imageGalleryName, string imageName, string imageCaption);
         void DeleteImage(string imageGalleryName, string imageName);
 

@@ -142,7 +142,7 @@ namespace Mello.ImageGallery.Tests {
             _imageGalleryServiceMock.Setup(o => o.IsFileAllowed(It.Is<HttpPostedFileBase>(file => file == fileMock))).Returns(true).Verifiable();
 
             // Act
-            var result = _adminController.AddImages(new ImageAddViewModel {ImageGalleryName = "gallery", ImageFile = fileMock});
+            var result = _adminController.AddImages(new ImageAddViewModel { ImageGalleryName = "gallery", ImageFiles = new[] { fileMock } });
 
             // Assert
             result.AssertActionRedirect().ToAction("Images");
