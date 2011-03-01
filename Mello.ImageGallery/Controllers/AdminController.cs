@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Web.Mvc;
 using ImageGallery;
 using ImageGallery.ViewModels;
@@ -115,19 +116,25 @@ namespace Mello.ImageGallery.Controllers {
                 return new HttpUnauthorizedResult();
             }
 
+            if (!ModelState.IsValid)
+                return View(viewModel);
+
             try {
-                if (viewModel.ImageFile == null) {
+                if (viewModel.ImageFiles == null || viewModel.ImageFiles.Count() == 0) {
                     ModelState.AddModelError("File", T("Select a file to upload").ToString());
 
                     return View(new ImageAddViewModel());
                 }
 
-                if (!_imageGalleryService.IsFileAllowed(viewModel.ImageFile)) {
-                    ModelState.AddModelError("File", T("That file type is not allowed.").ToString());
-                    return View(viewModel);
+                if (viewModel.ImageFiles.Any(file => !_imageGalleryService.IsFileAllowed(file))) {
+                  ModelState.AddModelError("File", T("That file type is not allowed.").ToString());
+                  return View(viewModel);
                 }
 
-                _imageGalleryService.AddImage(viewModel.ImageGalleryName, viewModel.ImageFile);
+                foreach (var file in viewModel.ImageFiles) {
+                  _imageGalleryService.AddImage(viewModel.ImageGalleryName, file);
+                }
+                
             }
             catch (Exception exception) {
                 Services.Notifier.Error(T("Adding image failed: {0}", exception.Message));

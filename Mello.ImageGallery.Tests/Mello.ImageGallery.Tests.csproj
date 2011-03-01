@@ -44,14 +44,17 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Orchard.Core">
-      <HintPath>lib\orchard\Orchard.Core.dll</HintPath>
+    <Reference Include="Orchard.Core, Version=1.0.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Mello.ImageGallery\bin\Orchard.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Orchard.Framework">
-      <HintPath>lib\orchard\Orchard.Framework.dll</HintPath>
+    <Reference Include="Orchard.Framework, Version=1.0.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Mello.ImageGallery\bin\Orchard.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="Orchard.Media">
-      <HintPath>lib\orchard\Orchard.Media.dll</HintPath>
+    <Reference Include="Orchard.Media, Version=1.0.20.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Mello.ImageGallery\bin\Orchard.Media.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

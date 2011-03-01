@@ -7,6 +7,6 @@ namespace ImageGallery.ViewModels {
     public class ImageAddViewModel {
         public string ImageGalleryName { get; set; }
 
-        public HttpPostedFileBase ImageFile { get; set; }
+        public IEnumerable<HttpPostedFileBase> ImageFiles { get; set; }
     }
 }
