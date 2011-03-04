@@ -6,7 +6,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {        
-        @(Html.Lightbox("#gallery a", Model.PluginSettings))
+        @Html.ImageGalleryScript("#gallery a", Model.ImageGalleryPlugin) 
     });
 </script>
 
@@ -15,7 +15,7 @@
         @foreach (var image in Model.Images)
         {
         <li>
-            <a href="@image.PublicUrl" title="@image.Caption">
+            <a href="@image.PublicUrl" title="@image.Caption" @Html.ImageGalleryAdditionalAttributes(Model.ImageGalleryPlugin)>
                 <img src="@image.ThumbnailPublicUrl" alt="@image.Caption" />
             </a>            
         </li>

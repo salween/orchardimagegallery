@@ -1,6 +1,8 @@
 ﻿using System.Linq;
 using ImageGallery.Services;
 using Mello.ImageGallery.Models;
+using Mello.ImageGallery.Models.Plugins;
+using Mello.ImageGallery.Models.Plugins.LightBox;
 using Mello.ImageGallery.Services;
 using Mello.ImageGallery.Utils;
 using Mello.ImageGallery.ViewModels;
@@ -9,50 +11,46 @@ using Orchard.ContentManagement.Drivers;
 using Orchard.ContentManagement;
 using Orchard.UI.Resources;
 using System.Web.Mvc;
+using System;
 
 namespace Mello.ImageGallery.Drivers {
     public class ImageGalleryDriver : ContentPartDriver<ImageGalleryPart> {
-        //TODO: Refactor this consts to plugin configs                
-        private const string LightboxFile = "Content/Scripts/jquery.lightbox-0.5.min.js";
-        private const string LightboxStyleFile = "Content/Styles/jquery.lightbox-0.5.css";
-        private const string ImageGalleryStyleFile = "Content/Styles/image-gallery.css";
-
         private readonly IImageGalleryService _imageGalleryService;
         private readonly IWorkContextAccessor _workContextAccessor;
-        private readonly IThumbnailService _thumbnailService;
 
-        public ImageGalleryDriver(IImageGalleryService imageGalleryService, IWorkContextAccessor workContextAccessor, IThumbnailService thumbnailService) {
-            _thumbnailService = thumbnailService;
+        public ImageGalleryDriver(IImageGalleryService imageGalleryService, IWorkContextAccessor workContextAccessor) {
             _workContextAccessor = workContextAccessor;
-            _imageGalleryService = imageGalleryService;
+            _imageGalleryService = imageGalleryService;            
         }
 
-        private void RegisterStaticContent() {
-            string context = "Modules/ImageGallery";
-
-            string lightbox = JavaScriptHelper.AddScriptTag(string.Concat(context, "/", LightboxFile));
-            LinkEntry lightboxStyle = LinkHelper.BuildStyleLink(string.Concat(context, "/", LightboxStyleFile));
-            LinkEntry imageGalleryStyle = LinkHelper.BuildStyleLink(string.Concat(context, "/", ImageGalleryStyleFile));
-
+        private void RegisterStaticContent(PluginResourceDescriptor pluginResourceDescriptor) {          
             IResourceManager resourceManager = _workContextAccessor.GetContext().Resolve<IResourceManager>();
+
+            foreach (string script in pluginResourceDescriptor.Scripts)
+            {
+              resourceManager.RegisterHeadScript(script);
+            }
+
+            foreach (LinkEntry style in pluginResourceDescriptor.Styles)
+            {
+              resourceManager.RegisterLink(style);
+            }
+
             resourceManager.Require("script", "jQuery").AtHead();
-            resourceManager.RegisterHeadScript(lightbox);
-            resourceManager.RegisterLink(lightboxStyle);
-            resourceManager.RegisterLink(imageGalleryStyle);
         }
 
-        protected override DriverResult Display(
-            ImageGalleryPart part, string displayType, dynamic shapeHelper) {
-            global::Mello.ImageGallery.Models.ImageGallery imageGallery = _imageGalleryService.GetImageGallery(part.MediaPath);
+        protected override DriverResult Display(ImageGalleryPart part, string displayType, dynamic shapeHelper) {
+          PluginFactory pluginFactory = PluginFactory.GetFactory(part.SelectedPlugin);
+            Models.ImageGallery imageGallery = _imageGalleryService.GetImageGallery(part.MediaPath);
 
             if (displayType == "SummaryAdmin") {
                 // Image gallery returns nothing if in Summary Admin
                 return null;
             }
 
-            RegisterStaticContent();
+            RegisterStaticContent(pluginFactory.PluginResourceDescriptor);
 
-            ImageGalleryViewModel viewModel = new ImageGalleryViewModel {PluginSettings = new LightBoxSettings()};
+            ImageGalleryViewModel viewModel = new ImageGalleryViewModel {ImageGalleryPlugin = pluginFactory.Plugin };
 
             if (!string.IsNullOrEmpty(part.MediaPath)) {
                 viewModel.Images = imageGallery.Images;
@@ -60,7 +58,7 @@ namespace Mello.ImageGallery.Drivers {
             else {
                 return null;
             }
-
+          
             return ContentShape("Parts_ImageGallery",
                                 () => shapeHelper.DisplayTemplate(
                                     TemplateName: "Parts/ImageGallery",
@@ -85,6 +83,12 @@ namespace Mello.ImageGallery.Drivers {
                                            ? string.Empty
                                            : part.AvailableGalleries.FirstOrDefault().Value;
             }
+
+            part.AvailablePlugins = Enum.GetNames(typeof (Plugin))
+              .Select(o => new SelectListItem {
+                Text = o,
+                Value = o
+              });            
 
             return ContentShape("Parts_ImageGallery_Edit",
                                 () => shapeHelper.EditorTemplate(

@@ -10,6 +10,7 @@ namespace Mello.ImageGallery {
             SchemaBuilder.CreateTable("ImageGalleryRecord", table => table
                     .ContentPartRecord()
                     .Column("MediaPath", DbType.String)
+                    .Column("SelectedPlugin", DbType.Byte)
                 );
 
             ContentDefinitionManager.AlterPartDefinition(
@@ -32,6 +33,6 @@ namespace Mello.ImageGallery {
                 );
 
             return 1;
-        }       
+        }
     }
 }
