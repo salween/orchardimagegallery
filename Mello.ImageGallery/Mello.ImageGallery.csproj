@@ -67,8 +67,6 @@
     <Content Include="Content\Plugins\LightBox\Images\lightbox-btn-prev.gif" />
     <Content Include="Content\Plugins\LightBox\Images\lightbox-ico-loading.gif" />
     <Content Include="Content\Plugins\PrettyPhoto\css\prettyPhoto.css" />
-    <Content Include="Content\Plugins\PrettyPhoto\images\backgrounds\bodyBackground.jpg" />
-    <Content Include="Content\Plugins\PrettyPhoto\images\backgrounds\checkmark.gif" />
     <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_rounded\btnNext.png" />
     <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_rounded\btnPrevious.png" />
     <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_rounded\contentPattern.png" />
