@@ -1,15 +1,17 @@
 ﻿@model Mello.ImageGallery.Models.ImageGalleryPart
+           
 <fieldset>
-    <div>
-        @Html.LabelFor(o => o.MediaPath, @T("Image gallery"))
-    </div>
-    <div>
-        @if (Model.HasAvailableGalleries)
-        {
-            @Html.DropDownListFor(o => o.SelectedGallery, Model.AvailableGalleries)
-        }
-        else{
-            @T("You need first to create an image gallery on Image Gallery menu")
-        }
-    </div>
+    <div>@Html.LabelFor(o => o.MediaPath, @T("Image gallery"))</div>
+
+     @if (!Model.HasAvailableGalleries)
+     {        
+        <div>@T("You need first to create an image gallery on Image Gallery menu")</div>
+     }
+     else
+     {            
+        <div>@Html.DropDownListFor(o => o.SelectedGallery, Model.AvailableGalleries)</div>
+         
+        <div>@Html.LabelFor(o => o.SelectedPlugin, @T("Image gallery plugin"))</div>
+        <div>@Html.DropDownListFor(o => o.SelectedPlugin, Model.AvailablePlugins)</div>
+     }
 </fieldset>

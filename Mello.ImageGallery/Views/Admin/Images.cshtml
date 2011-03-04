@@ -9,7 +9,7 @@
 @using (Html.BeginFormAntiForgeryPost())
 {
     <div class="manage">
-        @Html.ActionLink(T("Add image").ToString(), "AddImages", new { imageGalleryName = Model.ImageGalleryName }, new { @class = "button primaryAction" })
+        @Html.ActionLink(T("Add images").ToString(), "AddImages", new { imageGalleryName = Model.ImageGalleryName }, new { @class = "button primaryAction" })
         @Html.ActionLink(T("Image Gallery Properties").ToString(), "EditProperties", new { imageGalleryName = Model.ImageGalleryName }, new { @class = "button" })
     </div>
     

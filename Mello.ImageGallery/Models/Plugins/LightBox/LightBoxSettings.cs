@@ -1,13 +1,13 @@
 ﻿using System.Text;
 
-namespace Mello.ImageGallery.Models {
+namespace Mello.ImageGallery.Models.Plugins.LightBox {
     public class LightBoxSettings {
-        public LightBoxSettings() {
-            ButtonCloseImage = "Modules/ImageGallery/Content/Images/lightbox-btn-close.gif";
-            ButtonPreviousImage = "Modules/ImageGallery/Content/Images/lightbox-btn-prev.gif";
-            ButtonNextImage = "Modules/ImageGallery/Content/Images/lightbox-btn-next.gif";
-            LoadingIcon = "Modules/ImageGallery/Content/Images/lightbox-ico-loading.gif";
-            ImageBlank = "Modules/ImageGallery/Content/Images/lightbox-blank.gif";
+      public LightBoxSettings(string pluginResourcePath){
+            ButtonCloseImage = pluginResourcePath + "/Images/lightbox-btn-close.gif";
+            ButtonPreviousImage = pluginResourcePath + "/Images/lightbox-btn-prev.gif";
+            ButtonNextImage = pluginResourcePath + "/Images/lightbox-btn-next.gif";
+            LoadingIcon = pluginResourcePath + "/Images/lightbox-ico-loading.gif";
+            ImageBlank = pluginResourcePath + "/Images/lightbox-blank.gif";
         }
 
         public string ButtonCloseImage { get; set; }

@@ -61,16 +61,50 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Images\lightbox-blank.gif" />
-    <Content Include="Content\Images\lightbox-btn-close.gif" />
-    <Content Include="Content\Images\lightbox-btn-next.gif" />
-    <Content Include="Content\Images\lightbox-btn-prev.gif" />
-    <Content Include="Content\Images\lightbox-ico-loading.gif" />
-    <Content Include="Content\Scripts\jquery.lightbox-0.5.min.js" />
+    <Content Include="Content\Plugins\LightBox\Images\lightbox-blank.gif" />
+    <Content Include="Content\Plugins\LightBox\Images\lightbox-btn-close.gif" />
+    <Content Include="Content\Plugins\LightBox\Images\lightbox-btn-next.gif" />
+    <Content Include="Content\Plugins\LightBox\Images\lightbox-btn-prev.gif" />
+    <Content Include="Content\Plugins\LightBox\Images\lightbox-ico-loading.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\css\prettyPhoto.css" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\backgrounds\bodyBackground.jpg" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\backgrounds\checkmark.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_rounded\btnNext.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_rounded\btnPrevious.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_rounded\contentPattern.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_rounded\default_thumbnail.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_rounded\loader.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_rounded\sprite.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_square\btnNext.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_square\btnPrevious.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_square\contentPattern.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_square\default_thumbnail.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_square\loader.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\dark_square\sprite.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\facebook\btnNext.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\facebook\btnPrevious.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\facebook\contentPatternBottom.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\facebook\contentPatternLeft.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\facebook\contentPatternRight.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\facebook\contentPatternTop.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\facebook\default_thumbnail.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\facebook\loader.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\facebook\sprite.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_rounded\btnNext.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_rounded\btnPrevious.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_rounded\default_thumbnail.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_rounded\loader.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_rounded\sprite.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_square\btnNext.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_square\btnPrevious.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_square\default_thumbnail.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_square\loader.gif" />
+    <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_square\sprite.png" />
+    <Content Include="Content\Plugins\PrettyPhoto\js\jquery.prettyPhoto.js" />
+    <Content Include="Content\Plugins\LightBox\Scripts\jquery.lightbox-0.5.min.js" />
     <Content Include="Scripts\jquery.MultiFile.pack.js" />
     <Content Include="Styles\image-gallery-admin.css" />
-    <Content Include="Content\Styles\image-gallery.css" />
-    <Content Include="Content\Styles\jquery.lightbox-0.5.css" />
+    <Content Include="Content\Plugins\LightBox\Styles\jquery.lightbox-0.5.css" />
     <None Include="Views\Admin\AddImages.cshtml" />
     <Content Include="Styles\image-gallery.css" />
     <Content Include="Views\Admin\EditProperties.cshtml" />
@@ -99,7 +133,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Drivers\ImageGalleryDriver.cs" />
     <Compile Include="Handlers\ImageGalleryHandler.cs" />
-    <Compile Include="Helpers\LightboxExtensions.cs" />
+    <Compile Include="Helpers\ImageGalleryExtensions.cs" />
     <Compile Include="Migrations.cs" />
     <Compile Include="Models\ImageGallery.cs" />
     <Compile Include="Models\ImageGalleryImage.cs" />
@@ -107,7 +141,18 @@
     <Compile Include="Models\ImageGalleryPart.cs" />
     <Compile Include="Models\ImageGalleryRecord.cs" />
     <Compile Include="Models\ImageGallerySettingsRecord.cs" />
-    <Compile Include="Models\LightBoxSettings.cs" />
+    <Compile Include="Models\Plugins\LightBox\LightBoxFactory.cs" />
+    <Compile Include="Models\Plugins\LightBox\LightBoxResourceDescriptor.cs" />
+    <Compile Include="Models\Plugins\LightBox\LightBoxSettings.cs" />
+    <Compile Include="Models\Plugins\ImageGalleryPlugin.cs" />
+    <Compile Include="Models\Plugins\LightBox\LightBox.cs" />
+    <Compile Include="Models\Plugins\PluginFactory.cs" />
+    <Compile Include="Models\Plugins\Plugin.cs" />
+    <Compile Include="Models\Plugins\PluginResourceDescriptor.cs" />
+    <Compile Include="Models\Plugins\PrettyPhoto\PrettyPhoto.cs" />
+    <Compile Include="Models\Plugins\PrettyPhoto\PrettyPhotoFactory.cs" />
+    <Compile Include="Models\Plugins\PrettyPhoto\PrettyPhotoResourceDescriptor.cs" />
+    <Compile Include="Models\Plugins\PrettyPhoto\PrettyPhotoSettings.cs" />
     <Compile Include="Permissions.cs" />
     <Compile Include="ResourceManifest.cs" />
     <Compile Include="Services\IImageGalleryService.cs" />
@@ -181,7 +226,6 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <PostBuildEvent>xcopy /E /I /Y $(SolutionDir)$(ProjectName) "C:\Users\Gabriel_de_Mello\Documents\Visual Studio 2010\Projects\Learning\Orchard\OrchardDev\Modules\Mello.ImageGallery"</PostBuildEvent>
   </PropertyGroup>
 </Project>
