@@ -1,6 +1,10 @@
-@model Mello.ImageGallery.ViewModels.ImageGalleryImagesViewModel
+﻿@model Mello.ImageGallery.ViewModels.ImageGalleryImagesViewModel
 @using Orchard.Media.Extensions
 @{ Style.Require("ImageGalleryAdmin"); }
+@{ Script.Require("jQueryUISortable"); }
+@{ Script.Require("jQueryJSON"); }
+@{ Script.Include("Admin/Images.js"); }
+
 
 <h1>@Html.TitleForPage(T("Manage Image Gallery").ToString())</h1>
 
@@ -15,10 +19,15 @@
     
     <h2>@Model.ImageGalleryName</h2>
     
+        <input type="hidden" id="imageGalleryName" name="imageGalleryName" value="@Model.ImageGalleryName" />
+    
     <fieldset>
-        <table class="items" summary="@T("This is a table of the images of your image gallery.")">
+        <table id="images" class="items" summary="@T("This is a table of the images of your image gallery.")">
             <thead>
                 <tr>
+                    <th>
+                        &nbsp;↓
+                    </th>
                     <th>
                         @T("Name")
                     </th>
@@ -40,8 +49,10 @@
                 @foreach (var image in Model.Images)
                 {
                 <tr>
-                    <td>
-                        
+                    <td class="sort">                        
+                        <img src='@Href("~/Modules/Mello.ImageGallery/Content/Images/grip.png")'  alt="grip" />
+                    </td>
+                    <td class="name">                        
                         @Html.ActionLink(@image.Name, "EditImage", new { imageGalleryName = @Model.ImageGalleryName, imageName = @image.Name }) 
                     </td>
                     <td>

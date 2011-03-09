@@ -15,5 +15,9 @@ namespace Mello.ImageGallery.Models {
         public string PublicUrl { get; set; }
 
         public string ThumbnailPublicUrl { get; set; }
+
+        public string Title { get; set; }
+
+        public int Position { get; set; }
     }
 }

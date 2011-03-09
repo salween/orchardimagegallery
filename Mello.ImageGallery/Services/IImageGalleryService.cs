@@ -13,12 +13,14 @@ namespace Mello.ImageGallery.Services {
         void RenameImageGallery(string imageGalleryName, string newName);
         void UpdateImageGalleryProperties(string name, int thumbnailHeight, int thumbnailWidth);
 
-        //IEnumerable<ImageGalleryImage> GetImages();
         ImageGalleryImage GetImage(string galleryName, string imageName);
         void AddImage(string imageGalleryName, HttpPostedFileBase imageFile);
-        void UpdateImageProperties(string imageGalleryName, string imageName, string imageCaption);
+        void UpdateImageProperties(string imageGalleryName, string imageName, string imageTitle, string imageCaption);
         void DeleteImage(string imageGalleryName, string imageName);
 
+        string GetPublicUrl(string path);
         bool IsFileAllowed(HttpPostedFileBase file);
+
+        void ReorderImages(string imageGalleryName, IEnumerable<string> images);
     }
 }
