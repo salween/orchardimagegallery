@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using ImageGallery;
@@ -66,7 +67,13 @@ namespace Mello.ImageGallery.Controllers {
             }
 
             var imageGallery = _imageGalleryService.GetImageGallery(imageGalleryName);
-            return View(new ImageGalleryImagesViewModel {ImageGalleryName = imageGallery.Name, Images = imageGallery.Images});
+            
+            return View(new ImageGalleryImagesViewModel
+                            {
+                                ImageGalleryName = imageGallery.Name, 
+                                Images = imageGallery.Images, 
+                                GripIconPublicUrl = _imageGalleryService.GetPublicUrl("Content/grip.png")
+                            });
         }
 
         [HttpGet]
@@ -168,7 +175,7 @@ namespace Mello.ImageGallery.Controllers {
 
                 try {
                     _imageGalleryService.UpdateImageProperties(viewModel.ImageGalleryName, viewModel.Image.Name,
-                                                               viewModel.Image.Caption);
+                                                               viewModel.Image.Title, viewModel.Image.Caption);
                 }
                 catch (Exception exception) {
                     Services.Notifier.Error(T("Editing image properties failed: {0}", exception.Message));
@@ -221,6 +228,18 @@ namespace Mello.ImageGallery.Controllers {
             }
 
             return RedirectToAction("Index");
+        }
+
+        public JsonResult Reorder(string imageGalleryName, IEnumerable<string> images)
+        {
+            if (!Services.Authorizer.Authorize(Permissions.ManageImageGallery, T("Cannot delete image gallery")))
+            {
+                return Json(new HttpUnauthorizedResult());
+            }
+
+            _imageGalleryService.ReorderImages(imageGalleryName, images);
+
+            return new JsonResult();
         }
     }
 }

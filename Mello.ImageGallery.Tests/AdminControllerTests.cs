@@ -192,5 +192,20 @@ namespace Mello.ImageGallery.Tests {
             _imageGalleryServiceMock.Verify();
             result.AssertActionRedirect().ToAction("Index");
         }
+
+        [Test]
+        public void CanReorderImages()
+        {
+            var images = new string[] { "image" };
+
+            // Arrange
+            _imageGalleryServiceMock.Setup(o => o.ReorderImages("gallery", images)).Verifiable();
+
+            // Act
+            var result = _adminController.Reorder("gallery", images);
+
+            // Assert
+            _imageGalleryServiceMock.Verify();
+        }
     }
 }

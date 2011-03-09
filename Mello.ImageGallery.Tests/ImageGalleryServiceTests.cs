@@ -187,7 +187,7 @@ namespace Mello.ImageGallery.Tests {
             _mediaServiceMock.Setup(mediaService => mediaService.GetMediaFolders(It.IsAny<string>())).Returns(TestUtils.GetMediaFolders(5));
 
             // Act
-            _imageGalleryService.UpdateImageProperties("gallery", "image3", "caption");
+            _imageGalleryService.UpdateImageProperties("gallery", "image3", "title", "caption");
 
             // Assert
             _imageRepositoryMock.Verify();
@@ -202,6 +202,41 @@ namespace Mello.ImageGallery.Tests {
 
             // Act
             _imageGalleryService.DeleteImage("gallery", "image1");
+
+            // Assert
+            _imageRepositoryMock.Verify();
+            _mediaServiceMock.Verify();
+        }
+
+        [Test]
+        public  void CanGetPublicUrl()
+        {
+            // Arrange
+            _mediaServiceMock.Setup(mediaService => mediaService.GetPublicUrl("any")).Returns("ok").Verifiable();
+
+            // Act
+            string result =_imageGalleryService.GetPublicUrl("any");
+
+            // Assert
+            _mediaServiceMock.Verify();
+            Assert.AreEqual("ok", result);
+        }
+
+        [Test]
+        public void CanReorderImages()
+        {
+            // Arrange
+            List<string> images = new List<string>();
+            images.Add("image1");
+            images.Add("image2");
+            images.Add("image3");
+
+            _imageRepositoryMock.Setup(o => o.Create(It.IsAny<ImageGalleryImageSettingsRecord>())).Verifiable();
+            _mediaServiceMock.Setup(mediaService => mediaService.GetMediaFiles(It.IsAny<string>())).Returns(TestUtils.GetMediaFiles(5));
+            _mediaServiceMock.Setup(mediaService => mediaService.GetMediaFolders(It.IsAny<string>())).Returns(TestUtils.GetMediaFolders(5));
+
+            // Act
+            _imageGalleryService.ReorderImages("gallery", images);
 
             // Assert
             _imageRepositoryMock.Verify();

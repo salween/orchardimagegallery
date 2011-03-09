@@ -21,7 +21,7 @@ namespace Mello.ImageGallery {
                     .Column<int>("Id", column => column.PrimaryKey().Identity())
                     .Column<string>("MediaPath", column => column.WithLength(255))
                     .Column<int>("ThumbnailWidth")
-                    .Column<int>("ThumbnailHeight")
+                    .Column<int>("ThumbnailHeight")                    
                 );
 
 
@@ -30,6 +30,8 @@ namespace Mello.ImageGallery {
                     .Column<string>("Name", column => column.WithLength(255))
                     .Column<string>("Caption", column => column.WithLength(255))
                     .Column<int>("ImageGallerySettingsRecord_Id")
+                    .Column<string>("Title")
+                    .Column("Position", DbType.Int32)
                 );
 
             return 1;

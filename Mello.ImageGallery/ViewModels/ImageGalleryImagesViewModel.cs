@@ -6,5 +6,7 @@ namespace Mello.ImageGallery.ViewModels {
         public IEnumerable<ImageGalleryImage> Images { get; set; }
 
         public string ImageGalleryName { get; set; }
+
+        public string GripIconPublicUrl { get; set; }
     }
 }

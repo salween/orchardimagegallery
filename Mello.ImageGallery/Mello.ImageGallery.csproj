@@ -61,6 +61,7 @@
     <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Images\grip.png" />
     <Content Include="Placement.info">
       <SubType>Designer</SubType>
     </Content>
@@ -103,7 +104,10 @@
     <Content Include="Content\Plugins\PrettyPhoto\images\prettyPhoto\light_square\sprite.png" />
     <Content Include="Content\Plugins\PrettyPhoto\js\jquery.prettyPhoto.js" />
     <Content Include="Content\Plugins\LightBox\Scripts\jquery.lightbox-0.5.min.js" />
+    <Content Include="Scripts\Admin\Images.js" />
+    <Content Include="Scripts\jquery.json-2.2.min.js" />
     <Content Include="Scripts\jquery.MultiFile.pack.js" />
+    <Content Include="Scripts\sortable-interaction-jquery-ui-1.8.10.custom.min.js" />
     <Content Include="Styles\image-gallery-admin.css" />
     <Content Include="Content\Plugins\LightBox\Styles\jquery.lightbox-0.5.css" />
     <None Include="Views\Admin\AddImages.cshtml" />
@@ -170,6 +174,7 @@
     <Compile Include="ViewModels\ImageGalleryIndexViewModel.cs" />
     <Compile Include="ViewModels\ImageGallerySummaryAdminViewModel.cs" />
     <Compile Include="ViewModels\ImageGalleryViewModel.cs" />
+    <Compile Include="ViewModels\ImageReorderViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Views\Parts\" />
@@ -227,6 +232,6 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /I /Y $(SolutionDir)$(ProjectName) "C:\Users\Gabriel_de_Mello\Documents\Visual Studio 2010\Projects\Learning\Orchard\OrchardDev\Modules\Mello.ImageGallery"</PostBuildEvent>
+    <PostBuildEvent>xcopy /E /I /Y $(SolutionDir)$(ProjectName) "C:\Users\Gabriel\Documents\Visual Studio 2010\Projects\Orchard\OrchardDev\Modules\Mello.ImageGallery"</PostBuildEvent>
   </PropertyGroup>
 </Project>
