@@ -176,7 +176,8 @@ namespace Mello.ImageGallery.Controllers {
 
             try {
                 // TODO: Use an validation framewok on model, this is temporary
-                if (viewModel.Image.Caption.Length > 255) {
+                if (viewModel.Image.Caption != null && viewModel.Image.Caption.Length > 255)
+                {
                     ModelState.AddModelError("Caption", T("The caption length should not be longer than 255 characters").ToString());
                     return
                         View(new ImageEditViewModel
