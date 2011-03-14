@@ -1,7 +1,7 @@
 ﻿@model Mello.ImageGallery.Models.ImageGalleryPart
            
 <fieldset>
-    <div>@Html.LabelFor(o => o.MediaPath, @T("Image gallery"))</div>
+    <div>@Html.LabelFor(o => o.ImageGalleryName, @T("Image gallery"))</div>
 
      @if (!Model.HasAvailableGalleries)
      {        

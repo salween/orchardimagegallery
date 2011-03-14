@@ -4,7 +4,7 @@ namespace Mello.ImageGallery.Models {
     public class ImageGallerySettingsRecord {
         public virtual int Id { get; set; }
 
-        public virtual string MediaPath { get; set; }
+        public virtual string ImageGalleryName { get; set; }
 
         public virtual int ThumbnailWidth { get; set; }
 

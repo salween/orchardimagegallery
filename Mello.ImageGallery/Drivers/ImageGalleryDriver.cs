@@ -1,10 +1,7 @@
 ﻿using System.Linq;
-using ImageGallery.Services;
 using Mello.ImageGallery.Models;
 using Mello.ImageGallery.Models.Plugins;
-using Mello.ImageGallery.Models.Plugins.LightBox;
 using Mello.ImageGallery.Services;
-using Mello.ImageGallery.Utils;
 using Mello.ImageGallery.ViewModels;
 using Orchard;
 using Orchard.ContentManagement.Drivers;
@@ -20,45 +17,40 @@ namespace Mello.ImageGallery.Drivers {
 
         public ImageGalleryDriver(IImageGalleryService imageGalleryService, IWorkContextAccessor workContextAccessor) {
             _workContextAccessor = workContextAccessor;
-            _imageGalleryService = imageGalleryService;            
+            _imageGalleryService = imageGalleryService;
         }
 
-        private void RegisterStaticContent(PluginResourceDescriptor pluginResourceDescriptor) {          
+        private void RegisterStaticContent(PluginResourceDescriptor pluginResourceDescriptor) {
             IResourceManager resourceManager = _workContextAccessor.GetContext().Resolve<IResourceManager>();
 
-            foreach (string script in pluginResourceDescriptor.Scripts)
-            {
-              resourceManager.RegisterHeadScript(script);
+            foreach (string script in pluginResourceDescriptor.Scripts) {
+                resourceManager.RegisterHeadScript(script);
             }
 
-            foreach (LinkEntry style in pluginResourceDescriptor.Styles)
-            {
-              resourceManager.RegisterLink(style);
+            foreach (LinkEntry style in pluginResourceDescriptor.Styles) {
+                resourceManager.RegisterLink(style);
             }
 
             resourceManager.Require("script", "jQuery").AtHead();
         }
 
         protected override DriverResult Display(ImageGalleryPart part, string displayType, dynamic shapeHelper) {
-          PluginFactory pluginFactory = PluginFactory.GetFactory(part.SelectedPlugin);
-            Models.ImageGallery imageGallery = _imageGalleryService.GetImageGallery(part.MediaPath);
+            PluginFactory pluginFactory = PluginFactory.GetFactory(part.SelectedPlugin);
+            Models.ImageGallery imageGallery = _imageGalleryService.GetImageGallery(part.ImageGalleryName);
 
             if (displayType == "SummaryAdmin") {
                 // Image gallery returns nothing if in Summary Admin
                 return null;
             }
 
+            if (string.IsNullOrWhiteSpace(part.ImageGalleryName))
+                return null;
+
             RegisterStaticContent(pluginFactory.PluginResourceDescriptor);
 
-            ImageGalleryViewModel viewModel = new ImageGalleryViewModel {ImageGalleryPlugin = pluginFactory.Plugin };
+            ImageGalleryViewModel viewModel = new ImageGalleryViewModel {ImageGalleryPlugin = pluginFactory.Plugin};
+            viewModel.Images = imageGallery.Images;
 
-            if (!string.IsNullOrEmpty(part.MediaPath)) {
-                viewModel.Images = imageGallery.Images;
-            }
-            else {
-                return null;
-            }
-          
             return ContentShape("Parts_ImageGallery",
                                 () => shapeHelper.DisplayTemplate(
                                     TemplateName: "Parts/ImageGallery",
@@ -70,13 +62,14 @@ namespace Mello.ImageGallery.Drivers {
         protected override DriverResult Editor(
             ImageGalleryPart part, dynamic shapeHelper) {
             part.AvailableGalleries = _imageGalleryService.GetImageGalleries()
-                .OrderBy(o => o.Name).Select(o => new SelectListItem {
-                    Text = o.Name,
-                    Value = o.Name
-                });
+                .OrderBy(o => o.Name).Select(o => new SelectListItem
+                                                  {
+                                                      Text = o.Name,
+                                                      Value = o.Name
+                                                  });
 
-            if (!string.IsNullOrEmpty(part.MediaPath)) {
-                part.SelectedGallery = part.MediaPath;
+            if (!string.IsNullOrWhiteSpace(part.ImageGalleryName)) {
+                part.SelectedGallery = part.ImageGalleryName;
             }
             else {
                 part.SelectedGallery = part.AvailableGalleries.FirstOrDefault() == null
@@ -85,10 +78,11 @@ namespace Mello.ImageGallery.Drivers {
             }
 
             part.AvailablePlugins = Enum.GetNames(typeof (Plugin))
-              .Select(o => new SelectListItem {
-                Text = o,
-                Value = o
-              });            
+                .Select(o => new SelectListItem
+                             {
+                                 Text = o,
+                                 Value = o
+                             });
 
             return ContentShape("Parts_ImageGallery_Edit",
                                 () => shapeHelper.EditorTemplate(
@@ -101,7 +95,7 @@ namespace Mello.ImageGallery.Drivers {
         protected override DriverResult Editor(
             ImageGalleryPart part, IUpdateModel updater, dynamic shapeHelper) {
             updater.TryUpdateModel(part, Prefix, null, null);
-            part.MediaPath = part.SelectedGallery;
+            part.ImageGalleryName = part.SelectedGallery;
             return Editor(part, shapeHelper);
         }
     }

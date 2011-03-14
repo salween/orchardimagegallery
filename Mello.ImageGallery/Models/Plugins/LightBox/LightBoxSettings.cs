@@ -2,7 +2,7 @@
 
 namespace Mello.ImageGallery.Models.Plugins.LightBox {
     public class LightBoxSettings {
-      public LightBoxSettings(string pluginResourcePath){
+        public LightBoxSettings(string pluginResourcePath) {
             ButtonCloseImage = pluginResourcePath + "/Images/lightbox-btn-close.gif";
             ButtonPreviousImage = pluginResourcePath + "/Images/lightbox-btn-prev.gif";
             ButtonNextImage = pluginResourcePath + "/Images/lightbox-btn-next.gif";

@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using ImageGallery;
-using ImageGallery.ViewModels;
 using Mello.ImageGallery.Services;
 using Mello.ImageGallery.ViewModels;
 using Orchard;
@@ -67,13 +65,13 @@ namespace Mello.ImageGallery.Controllers {
             }
 
             var imageGallery = _imageGalleryService.GetImageGallery(imageGalleryName);
-            
+
             return View(new ImageGalleryImagesViewModel
-                            {
-                                ImageGalleryName = imageGallery.Name, 
-                                Images = imageGallery.Images, 
-                                GripIconPublicUrl = _imageGalleryService.GetPublicUrl("Content/grip.png")
-                            });
+                        {
+                            ImageGalleryName = imageGallery.Name,
+                            Images = imageGallery.Images,
+                            GripIconPublicUrl = _imageGalleryService.GetPublicUrl("Content/grip.png")
+                        });
         }
 
         [HttpGet]
@@ -87,7 +85,7 @@ namespace Mello.ImageGallery.Controllers {
 
         [HttpPost]
         [FormValueRequired("submit.Save")]
-        public ActionResult EditProperties(ImageGalleryEditPropertiesViewModel viewModel) {
+        public ActionResult EditProperties(ImageGalleryEditPropertiesViewModel viewModel, string newName) {
             if (!Services.Authorizer.Authorize(Permissions.ManageImageGallery, T("Cannot edit image gallery"))) {
                 return new HttpUnauthorizedResult();
             }
@@ -96,11 +94,21 @@ namespace Mello.ImageGallery.Controllers {
                 return View(viewModel);
             }
 
+            if (string.IsNullOrEmpty(newName)) {
+                ModelState.AddModelError("NewName", T("Invalid image gallery name").ToString());
+                return View(viewModel);
+            }
+
             try {
-                _imageGalleryService.UpdateImageGalleryProperties(viewModel.ImageGallery.Name, viewModel.ImageGallery.ThumbnailHeight, viewModel.ImageGallery.ThumbnailWidth);
+                _imageGalleryService.UpdateImageGalleryProperties(viewModel.ImageGallery.Name, viewModel.ImageGallery.ThumbnailHeight,
+                                                                  viewModel.ImageGallery.ThumbnailWidth);
+
+                if (viewModel.ImageGallery.Name != newName) {
+                    _imageGalleryService.RenameImageGallery(viewModel.ImageGallery.Name, newName);
+                }
 
                 Services.Notifier.Information(T("Image gallery properties successfully modified"));
-                return RedirectToAction("Images", new {imageGalleryName = viewModel.ImageGallery.Name});
+                return RedirectToAction("Images", new {imageGalleryName = newName});
             }
             catch (Exception exception) {
                 Services.Notifier.Error(T("Editing image gallery failed: {0}", exception.Message));
@@ -134,14 +142,13 @@ namespace Mello.ImageGallery.Controllers {
                 }
 
                 if (viewModel.ImageFiles.Any(file => !_imageGalleryService.IsFileAllowed(file))) {
-                  ModelState.AddModelError("File", T("That file type is not allowed.").ToString());
-                  return View(viewModel);
+                    ModelState.AddModelError("File", T("That file type is not allowed.").ToString());
+                    return View(viewModel);
                 }
 
                 foreach (var file in viewModel.ImageFiles) {
-                  _imageGalleryService.AddImage(viewModel.ImageGalleryName, file);
+                    _imageGalleryService.AddImage(viewModel.ImageGalleryName, file);
                 }
-                
             }
             catch (Exception exception) {
                 Services.Notifier.Error(T("Adding image failed: {0}", exception.Message));
@@ -156,7 +163,8 @@ namespace Mello.ImageGallery.Controllers {
                 return new HttpUnauthorizedResult();
             }
 
-            return View(new ImageEditViewModel {ImageGalleryName = imageGalleryName, Image = _imageGalleryService.GetImage(imageGalleryName, imageName)});
+            return
+                View(new ImageEditViewModel {ImageGalleryName = imageGalleryName, Image = _imageGalleryService.GetImage(imageGalleryName, imageName)});
         }
 
         [HttpPost]
@@ -170,7 +178,12 @@ namespace Mello.ImageGallery.Controllers {
                 // TODO: Use an validation framewok on model, this is temporary
                 if (viewModel.Image.Caption.Length > 255) {
                     ModelState.AddModelError("Caption", T("The caption length should not be longer than 255 characters").ToString());
-                    return View(new ImageEditViewModel {ImageGalleryName = viewModel.ImageGalleryName, Image = _imageGalleryService.GetImage(viewModel.ImageGalleryName, viewModel.Image.Name)});
+                    return
+                        View(new ImageEditViewModel
+                             {
+                                 ImageGalleryName = viewModel.ImageGalleryName,
+                                 Image = _imageGalleryService.GetImage(viewModel.ImageGalleryName, viewModel.Image.Name)
+                             });
                 }
 
                 try {
@@ -179,7 +192,12 @@ namespace Mello.ImageGallery.Controllers {
                 }
                 catch (Exception exception) {
                     Services.Notifier.Error(T("Editing image properties failed: {0}", exception.Message));
-                    return View(new ImageEditViewModel {ImageGalleryName = viewModel.ImageGalleryName, Image = _imageGalleryService.GetImage(viewModel.ImageGalleryName, viewModel.Image.Name)});
+                    return
+                        View(new ImageEditViewModel
+                             {
+                                 ImageGalleryName = viewModel.ImageGalleryName,
+                                 Image = _imageGalleryService.GetImage(viewModel.ImageGalleryName, viewModel.Image.Name)
+                             });
                 }
 
                 Services.Notifier.Information(T("Image properties successfully modified"));
@@ -230,10 +248,8 @@ namespace Mello.ImageGallery.Controllers {
             return RedirectToAction("Index");
         }
 
-        public JsonResult Reorder(string imageGalleryName, IEnumerable<string> images)
-        {
-            if (!Services.Authorizer.Authorize(Permissions.ManageImageGallery, T("Cannot delete image gallery")))
-            {
+        public JsonResult Reorder(string imageGalleryName, IEnumerable<string> images) {
+            if (!Services.Authorizer.Authorize(Permissions.ManageImageGallery, T("Cannot delete image gallery"))) {
                 return Json(new HttpUnauthorizedResult());
             }
 

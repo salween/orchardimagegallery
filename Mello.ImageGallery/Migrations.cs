@@ -9,7 +9,7 @@ namespace Mello.ImageGallery {
         public int Create() {
             SchemaBuilder.CreateTable("ImageGalleryRecord", table => table
                     .ContentPartRecord()
-                    .Column("MediaPath", DbType.String)
+                    .Column("ImageGalleryName", DbType.String)
                     .Column("SelectedPlugin", DbType.Byte)
                 );
 
@@ -19,9 +19,9 @@ namespace Mello.ImageGallery {
 
             SchemaBuilder.CreateTable("ImageGallerySettingsRecord", table => table
                     .Column<int>("Id", column => column.PrimaryKey().Identity())
-                    .Column<string>("MediaPath", column => column.WithLength(255))
+                    .Column<string>("ImageGalleryName", column => column.WithLength(255))
                     .Column<int>("ThumbnailWidth")
-                    .Column<int>("ThumbnailHeight")                    
+                    .Column<int>("ThumbnailHeight")
                 );
 
 

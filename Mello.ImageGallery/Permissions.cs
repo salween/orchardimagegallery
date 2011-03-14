@@ -9,32 +9,39 @@ namespace Mello.ImageGallery {
         public virtual Feature Feature { get; set; }
 
         public IEnumerable<Permission> GetPermissions() {
-            return new[] {
-                ManageImageGallery,
-            };
+            return new[]
+                   {
+                       ManageImageGallery,
+                   };
         }
 
         public IEnumerable<PermissionStereotype> GetDefaultStereotypes() {
-            return new[] {
-                new PermissionStereotype {
-                    Name = "Administrator",
-                    Permissions = new[] {ManageImageGallery}
-                },
-                new PermissionStereotype {
-                    Name = "Editor",
-                    Permissions = new[] {ManageImageGallery}
-                },
-                new PermissionStereotype {
-                    Name = "Moderator",
-                },
-                new PermissionStereotype {
-                    Name = "Author",
-                    Permissions = new[] {ManageImageGallery}
-                },
-                new PermissionStereotype {
-                    Name = "Contributor",
-                },
-            };
+            return new[]
+                   {
+                       new PermissionStereotype
+                       {
+                           Name = "Administrator",
+                           Permissions = new[] {ManageImageGallery}
+                       },
+                       new PermissionStereotype
+                       {
+                           Name = "Editor",
+                           Permissions = new[] {ManageImageGallery}
+                       },
+                       new PermissionStereotype
+                       {
+                           Name = "Moderator",
+                       },
+                       new PermissionStereotype
+                       {
+                           Name = "Author",
+                           Permissions = new[] {ManageImageGallery}
+                       },
+                       new PermissionStereotype
+                       {
+                           Name = "Contributor",
+                       },
+                   };
         }
     }
 }
