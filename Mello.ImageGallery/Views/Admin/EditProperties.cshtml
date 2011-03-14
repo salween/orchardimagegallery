@@ -1,4 +1,4 @@
-﻿@model ImageGallery.ViewModels.ImageGalleryEditPropertiesViewModel
+﻿@model Mello.ImageGallery.ViewModels.ImageGalleryEditPropertiesViewModel
 
 <h1>@Html.TitleForPage(T("Image Gallery Properties").ToString())</h1>
 
@@ -6,8 +6,11 @@
     @Html.ValidationSummary()
 
     <fieldset>
-        <h2>@Model.ImageGallery.Name</h2>
+        @*<h2>@Model.ImageGallery.Name</h2>*@
         @Html.HiddenFor(o => o.ImageGallery.Name)
+
+        <label for="NewName">@T("Image gallery name")</label>
+        @Html.TextBox("NewName", Model.ImageGallery.Name)
 
         <label for="ThumbnailWidth">@T("Thumbnail width")</label>
         @Html.TextBoxFor(o => o.ImageGallery.ThumbnailWidth)

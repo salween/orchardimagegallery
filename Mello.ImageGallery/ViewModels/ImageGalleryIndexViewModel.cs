@@ -3,9 +3,9 @@
 namespace Mello.ImageGallery.ViewModels {
     public class ImageGalleryIndexViewModel {
         public ImageGalleryIndexViewModel() {
-            ImageGalleries = new List<Mello.ImageGallery.Models.ImageGallery>();
+            ImageGalleries = new List<Models.ImageGallery>();
         }
 
-        public IEnumerable<Mello.ImageGallery.Models.ImageGallery> ImageGalleries { get; set; }
+        public IEnumerable<Models.ImageGallery> ImageGalleries { get; set; }
     }
 }

@@ -44,7 +44,8 @@ namespace ImageGallery.Services {
         /// <param name="thumbnailWidth">The thumbnail width in pixels.</param>
         /// <param name="thumbnailHeight">The thumbnail height in pixels.</param>
         /// <returns>The thumbnail file media path.</returns>
-        protected string CreateThumbnail(string image, string thumbnailFolderPath, string imageName, int thumbnailWidth, int thumbnailHeight) {
+        protected string CreateThumbnail(string image, string thumbnailFolderPath, string imageName, int thumbnailWidth,
+                                         int thumbnailHeight) {
             if (thumbnailWidth <= 0) {
                 throw new ArgumentException("Thumbnail width must be greater than zero", "thumbnailWidth");
             }
@@ -88,7 +89,8 @@ namespace ImageGallery.Services {
                 .Select(o => o.Name).SingleOrDefault(o => o == imageName);
 
             if (string.IsNullOrEmpty(thumbnailName)) {
-                thumbnailName = GetMediaName(CreateThumbnail(image, thumbnailFolderPath, imageName, thumbnailWidth, thumbnailHeight));
+                thumbnailName =
+                    GetMediaName(CreateThumbnail(image, thumbnailFolderPath, imageName, thumbnailWidth, thumbnailHeight));
             }
             else {
                 bool isCorrectSize;

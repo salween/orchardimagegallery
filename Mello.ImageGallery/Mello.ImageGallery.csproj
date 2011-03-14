@@ -232,6 +232,7 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
-    <PostBuildEvent>xcopy /E /I /Y $(SolutionDir)$(ProjectName) "C:\Users\Gabriel\Documents\Visual Studio 2010\Projects\Orchard\OrchardDev\Modules\Mello.ImageGallery"</PostBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
   </PropertyGroup>
 </Project>

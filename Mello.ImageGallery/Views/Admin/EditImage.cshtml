@@ -29,8 +29,11 @@
         {
             @Html.ValidationSummary()   
     
-            <fieldset>                
-                <label for="Caption">@T("Caption")</label>
+            <fieldset>
+                <label for="Title">@T("Title")</label>
+                @Html.TextBoxFor(o => o.Image.Title, new { Class = "textLarge" })
+                            
+                <label for="Caption">@T("Description")</label>
                 @Html.TextBoxFor(o => o.Image.Caption, new { Class = "textLarge" })
 
                 @Html.HiddenFor(o => o.ImageGalleryName)

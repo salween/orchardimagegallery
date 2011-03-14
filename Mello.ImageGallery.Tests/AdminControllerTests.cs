@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using System.Web;
 using Autofac;
-using ImageGallery;
 using Mello.ImageGallery.Controllers;
 using Mello.ImageGallery.Models;
 using Mello.ImageGallery.Services;
@@ -9,7 +8,6 @@ using Mello.ImageGallery.ViewModels;
 using MvcContrib.TestHelper;
 using NUnit.Framework;
 using Moq;
-using ImageGallery.ViewModels;
 using Orchard;
 using Orchard.Localization;
 using Orchard.UI.Notify;
@@ -26,7 +24,8 @@ namespace Mello.ImageGallery.Tests {
         public void Init() {
             _imageGalleryServiceMock = new Mock<IImageGalleryService>();
             var orchardServicesMock = new Mock<IOrchardServices>();
-            orchardServicesMock.Setup(o => o.Authorizer.Authorize(Permissions.ManageImageGallery, It.IsAny<LocalizedString>())).Returns(true);
+            orchardServicesMock.Setup(
+                o => o.Authorizer.Authorize(Permissions.ManageImageGallery, It.IsAny<LocalizedString>())).Returns(true);
             orchardServicesMock.Setup(o => o.Notifier.Add(It.IsAny<NotifyType>(), It.IsAny<LocalizedString>()));
 
             var builder = new ContainerBuilder();
@@ -43,7 +42,8 @@ namespace Mello.ImageGallery.Tests {
         [Test]
         public void Index_Should_Return_ImageGalleryIndexViewModel() {
             // Arrange
-            _imageGalleryServiceMock.Setup(galleryService => galleryService.GetImageGalleries()).Returns(TestUtils.GetGalleries(1)).Verifiable();
+            _imageGalleryServiceMock.Setup(galleryService => galleryService.GetImageGalleries()).Returns(
+                TestUtils.GetGalleries(1)).Verifiable();
 
             // Act
             var result = _adminController.Index();
@@ -54,7 +54,7 @@ namespace Mello.ImageGallery.Tests {
         }
 
         [Test]
-        public void Create_Get_Should_Return_CreateGalleryViewModel() {
+        public void Create_Should_Return_CreateGalleryViewModel() {
             // Act
             var result = _adminController.Create();
 
@@ -79,7 +79,8 @@ namespace Mello.ImageGallery.Tests {
         [Test]
         public void Images_Should_Return_ImageGalleryEditImagesViewModel() {
             // Arrange
-            _imageGalleryServiceMock.Setup(galleryService => galleryService.GetImageGallery("gallery")).Returns(new Mello.ImageGallery.Models.ImageGallery {Name = "gallery"});
+            _imageGalleryServiceMock.Setup(galleryService => galleryService.GetImageGallery("gallery")).Returns(
+                new Mello.ImageGallery.Models.ImageGallery {Name = "gallery"});
 
             // Act
             var result = _adminController.Images("gallery");
@@ -94,14 +95,16 @@ namespace Mello.ImageGallery.Tests {
         [Test]
         public void EditProperties_Should_Return_ImageGalleryEditPropertiesViewModel() {
             // Arrange
-            _imageGalleryServiceMock.Setup(galleryService => galleryService.GetImageGallery("gallery")).Returns(new Mello.ImageGallery.Models.ImageGallery {Name = "gallery"});
+            _imageGalleryServiceMock.Setup(galleryService => galleryService.GetImageGallery("gallery")).Returns(
+                new Models.ImageGallery {Name = "gallery"});
 
             // Act
             var result = _adminController.EditProperties("gallery");
 
             // Assert
             result.AssertViewRendered().ForView("").WithViewData<ImageGalleryEditPropertiesViewModel>();
-            ImageGalleryEditPropertiesViewModel model = ((ViewResult) result).Model as ImageGalleryEditPropertiesViewModel;
+            ImageGalleryEditPropertiesViewModel model =
+                ((ViewResult) result).Model as ImageGalleryEditPropertiesViewModel;
             Assert.IsNotNull(model);
             Assert.AreEqual("gallery", model.ImageGallery.Name);
         }
@@ -110,11 +113,13 @@ namespace Mello.ImageGallery.Tests {
         public void EditProperties_Post_Should_Save_And_Return_To_Images() {
             // Arrange
             _imageGalleryServiceMock.Setup(o => o.UpdateImageGalleryProperties("gallery", 80, 100)).Verifiable();
-            var imageGallery = new Mello.ImageGallery.Models.ImageGallery {Name = "gallery", ThumbnailHeight = 80, ThumbnailWidth = 100};
-            ImageGalleryEditPropertiesViewModel viewModel = new ImageGalleryEditPropertiesViewModel {ImageGallery = imageGallery};
+            var imageGallery = new Models.ImageGallery
+                               {Name = "gallery", ThumbnailHeight = 80, ThumbnailWidth = 100};
+            ImageGalleryEditPropertiesViewModel viewModel = new ImageGalleryEditPropertiesViewModel
+                                                            {ImageGallery = imageGallery};
 
             // Act        
-            var result = _adminController.EditProperties(viewModel);
+            var result = _adminController.EditProperties(viewModel, "gallery");
 
             // Assert
             _imageGalleryServiceMock.Verify();
@@ -139,10 +144,13 @@ namespace Mello.ImageGallery.Tests {
             // Arrange
             var fileMock = TestUtils.GetMockImagePostedFile();
             _imageGalleryServiceMock.Setup(o => o.AddImage("gallery", fileMock)).Verifiable();
-            _imageGalleryServiceMock.Setup(o => o.IsFileAllowed(It.Is<HttpPostedFileBase>(file => file == fileMock))).Returns(true).Verifiable();
+            _imageGalleryServiceMock.Setup(o => o.IsFileAllowed(It.Is<HttpPostedFileBase>(file => file == fileMock))).
+                Returns(true).Verifiable();
 
             // Act
-            var result = _adminController.AddImages(new ImageAddViewModel { ImageGalleryName = "gallery", ImageFiles = new[] { fileMock } });
+            var result =
+                _adminController.AddImages(new ImageAddViewModel
+                                           {ImageGalleryName = "gallery", ImageFiles = new[] {fileMock}});
 
             // Assert
             result.AssertActionRedirect().ToAction("Images");
@@ -153,7 +161,8 @@ namespace Mello.ImageGallery.Tests {
         public void EditImage_Should_Return_ImageEditViewModel() {
             // Arrange
             ImageGalleryImage image = new ImageGalleryImage {Name = "image1"};
-            _imageGalleryServiceMock.Setup(imageGalleryService => imageGalleryService.GetImage("gallery", "image1")).Returns(image).Verifiable();
+            _imageGalleryServiceMock.Setup(imageGalleryService => imageGalleryService.GetImage("gallery", "image1")).
+                Returns(image).Verifiable();
 
             // Act
             var result = _adminController.EditImage("gallery", "image1");
@@ -170,7 +179,8 @@ namespace Mello.ImageGallery.Tests {
         [Test]
         public void DeleteImage_Should_Delete_And_Return_To_Gallery_Images() {
             // Arrange
-            _imageGalleryServiceMock.Setup(imageGalleryService => imageGalleryService.DeleteImage("gallery", "image")).Verifiable();
+            _imageGalleryServiceMock.Setup(imageGalleryService => imageGalleryService.DeleteImage("gallery", "image")).
+                Verifiable();
 
             // Act
             var result = _adminController.DeleteImage("gallery", "image");
@@ -183,7 +193,8 @@ namespace Mello.ImageGallery.Tests {
         [Test]
         public void Delete_Should_Delete_Gallery_And_Redirect_To_Index() {
             // Arrange
-            _imageGalleryServiceMock.Setup(imageGalleryService => imageGalleryService.DeleteImageGallery("gallery")).Verifiable();
+            _imageGalleryServiceMock.Setup(imageGalleryService => imageGalleryService.DeleteImageGallery("gallery")).
+                Verifiable();
 
             // Act
             var result = _adminController.Delete("gallery");
@@ -194,9 +205,8 @@ namespace Mello.ImageGallery.Tests {
         }
 
         [Test]
-        public void CanReorderImages()
-        {
-            var images = new string[] { "image" };
+        public void CanReorderImages() {
+            var images = new string[] {"image"};
 
             // Arrange
             _imageGalleryServiceMock.Setup(o => o.ReorderImages("gallery", images)).Verifiable();

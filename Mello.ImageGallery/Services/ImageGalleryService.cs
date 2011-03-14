@@ -17,10 +17,13 @@ namespace Mello.ImageGallery.Services {
         private readonly IThumbnailService _thumbnailService;
         private readonly IRepository<ImageGallerySettingsRecord> _repository;
         private readonly IRepository<ImageGalleryImageSettingsRecord> _imageRepository;
+        private readonly IRepository<ImageGalleryRecord> _imageGalleryPartRepository;
 
-        //TODO: Remove Image repository as soon as I can cascade de saving
+        //TODO: Remove Image repository as soon as it can cascade the saving
         public ImageGalleryService(IMediaService mediaService, IRepository<ImageGallerySettingsRecord> repository,
-                                   IRepository<ImageGalleryImageSettingsRecord> imageRepository, IThumbnailService thumbnailService) {
+                                   IRepository<ImageGalleryImageSettingsRecord> imageRepository, IThumbnailService thumbnailService,
+                                   IRepository<ImageGalleryRecord> imageGalleryPartRepository) {
+            _imageGalleryPartRepository = imageGalleryPartRepository;
             _repository = repository;
             _mediaService = mediaService;
             _imageRepository = imageRepository;
@@ -32,7 +35,7 @@ namespace Mello.ImageGallery.Services {
         }
 
         public IEnumerable<Models.ImageGallery> GetImageGalleries() {
-            return _mediaService.GetMediaFolders(ImageGalleriesMediaFolder).Select(CreateGalleryFromMediaFolder);
+            return _mediaService.GetMediaFolders(ImageGalleriesMediaFolder).Select(CreateImageGalleryFromMediaFolder);
         }
 
         public void CreateImageGallery(string name) {
@@ -46,12 +49,27 @@ namespace Mello.ImageGallery.Services {
                 DeleteImage(name, image.Name, GetImageSettings(gallerySettings, image.Name));
             }
 
-            _repository.Delete(gallerySettings);
+            if (gallerySettings != null)
+                _repository.Delete(gallerySettings);
             _mediaService.DeleteFolder(GetMediaPath(name));
         }
 
-        public void RenameImageGallery(string name, string newName) {
-            throw new NotImplementedException();
+        public void RenameImageGallery(string imageGalleryName, string newName) {
+            string mediaPath = GetMediaPath(imageGalleryName);
+            _mediaService.RenameFolder(mediaPath, newName);
+
+            ImageGallerySettingsRecord settings = GetImageGallerySettings(imageGalleryName);
+            if (settings != null) {
+                settings.ImageGalleryName = newName;
+                _repository.Update(settings);
+            }
+
+            IEnumerable<ImageGalleryRecord> records = _imageGalleryPartRepository.Fetch(partRecord => partRecord.ImageGalleryName == imageGalleryName);
+
+            foreach (ImageGalleryRecord imageGalleryRecord in records) {
+                imageGalleryRecord.ImageGalleryName = newName;
+                _imageGalleryPartRepository.Update(imageGalleryRecord);
+            }
         }
 
         public void UpdateImageGalleryProperties(string imageGalleryName, int thumbnailHeight, int thumbnailWidth) {
@@ -84,16 +102,19 @@ namespace Mello.ImageGallery.Services {
         }
 
         public Models.ImageGallery GetImageGallery(string imageGalleryName) {
+            if (imageGalleryName.Contains("\\"))
+                imageGalleryName = GetName(imageGalleryName);
+
             var mediaFolder = _mediaService.GetMediaFolders(ImageGalleriesMediaFolder).SingleOrDefault(m => m.Name == imageGalleryName);
 
             if (mediaFolder != null) {
-                return CreateGalleryFromMediaFolder(mediaFolder);
+                return CreateImageGalleryFromMediaFolder(mediaFolder);
             }
             return null;
         }
 
-        public void AddImage(string imageGalleryName, HttpPostedFileBase imageFile) {          
-          _mediaService.UploadMediaFile(GetMediaPath(imageGalleryName), imageFile, false);
+        public void AddImage(string imageGalleryName, HttpPostedFileBase imageFile) {
+            _mediaService.UploadMediaFile(GetMediaPath(imageGalleryName), imageFile, false);
         }
 
         public void UpdateImageProperties(string imageGalleryName, string imageName, string imageTitle, string imageCaption) {
@@ -126,11 +147,15 @@ namespace Mello.ImageGallery.Services {
             _repository.Update(imageGallerySettings);
         }
 
-        private ImageGallerySettingsRecord GetImageGallerySettings(string imageGalleryMediaPath) {
-            return _repository.Get(o => o.MediaPath == imageGalleryMediaPath);
+        private ImageGallerySettingsRecord GetImageGallerySettings(string imageGalleryName) {
+            if (imageGalleryName.Contains("\\"))
+                imageGalleryName = GetName(imageGalleryName);
+            return _repository.Get(o => o.ImageGalleryName == imageGalleryName);
         }
 
         private ImageGalleryImageSettingsRecord GetImageSettings(ImageGallerySettingsRecord imageGallerySettings, string imageName) {
+            if (imageGallerySettings == null)
+                return null;
             return imageGallerySettings.ImageSettings.SingleOrDefault(o => o.Name == imageName);
         }
 
@@ -140,29 +165,33 @@ namespace Mello.ImageGallery.Services {
             return imageGallerySettings.ImageSettings.SingleOrDefault(o => o.Name == imageName);
         }
 
-        private Models.ImageGallery CreateGalleryFromMediaFolder(MediaFolder mediaFolder) {
+        private Models.ImageGallery CreateImageGalleryFromMediaFolder(MediaFolder mediaFolder) {
             var images = _mediaService.GetMediaFiles(mediaFolder.MediaPath);
-            ImageGallerySettingsRecord imageGallerySettings = GetImageGallerySettings(mediaFolder.MediaPath) ??
-                                                              CreateImageGallerySettings(mediaFolder.MediaPath, ThumbnailDefaultSize, ThumbnailDefaultSize);
+            ImageGallerySettingsRecord imageGallerySettings = GetImageGallerySettings(GetName(mediaFolder.MediaPath)) ??
+                                                              CreateImageGallerySettings(mediaFolder.MediaPath, ThumbnailDefaultSize,
+                                                                                         ThumbnailDefaultSize);
 
-            return new Models.ImageGallery {
-                LastUpdated = mediaFolder.LastUpdated,
-                MediaPath = mediaFolder.MediaPath,
-                Name = mediaFolder.Name,
-                Size = mediaFolder.Size,
-                User = mediaFolder.User,
-                ThumbnailHeight = imageGallerySettings != null ? imageGallerySettings.ThumbnailHeight : ThumbnailDefaultSize,
-                ThumbnailWidth = imageGallerySettings != null ? imageGallerySettings.ThumbnailWidth : ThumbnailDefaultSize,
-                Images = images.Select(image => CreateImageFromMediaFile(image, imageGallerySettings)).OrderBy(image => image.Position)
-            };
+            return new Models.ImageGallery
+                   {
+                       Id = imageGallerySettings.Id,
+                       LastUpdated = mediaFolder.LastUpdated,
+                       MediaPath = mediaFolder.MediaPath,
+                       Name = mediaFolder.Name,
+                       Size = mediaFolder.Size,
+                       User = mediaFolder.User,
+                       ThumbnailHeight = imageGallerySettings.ThumbnailHeight,
+                       ThumbnailWidth = imageGallerySettings.ThumbnailWidth,
+                       Images = images.Select(image => CreateImageFromMediaFile(image, imageGallerySettings)).OrderBy(image => image.Position)
+                   };
         }
 
         private ImageGallerySettingsRecord CreateImageGallerySettings(string imageGalleryMediaPath, int thumbnailHeight, int thumbnailWidth) {
-            ImageGallerySettingsRecord imageGallerySettings = new ImageGallerySettingsRecord {
-                MediaPath = imageGalleryMediaPath,
-                ThumbnailHeight = thumbnailHeight,
-                ThumbnailWidth = thumbnailWidth
-            };
+            ImageGallerySettingsRecord imageGallerySettings = new ImageGallerySettingsRecord
+                                                              {
+                                                                  ImageGalleryName = GetName(imageGalleryMediaPath),
+                                                                  ThumbnailHeight = thumbnailHeight,
+                                                                  ThumbnailWidth = thumbnailWidth
+                                                              };
             _repository.Create(imageGallerySettings);
 
             return imageGallerySettings;
@@ -184,17 +213,18 @@ namespace Mello.ImageGallery.Services {
                                                               imageGallerySettings.ThumbnailHeight);
             }
 
-            return new ImageGalleryImage {
-                PublicUrl = _mediaService.GetPublicUrl(System.IO.Path.Combine(mediaFile.FolderName, mediaFile.Name)),
-                Name = mediaFile.Name,
-                Size = mediaFile.Size,
-                User = mediaFile.User,
-                LastUpdated = mediaFile.LastUpdated,
-                Caption = imageSettings == null ? string.Empty : imageSettings.Caption,
-                ThumbnailPublicUrl = thumbnailUrl,
-                Title = imageSettings == null ? null : imageSettings.Title,
-                Position = imageSettings == null ? 0 : imageSettings.Position
-            };
+            return new ImageGalleryImage
+                   {
+                       PublicUrl = _mediaService.GetPublicUrl(System.IO.Path.Combine(mediaFile.FolderName, mediaFile.Name)),
+                       Name = mediaFile.Name,
+                       Size = mediaFile.Size,
+                       User = mediaFile.User,
+                       LastUpdated = mediaFile.LastUpdated,
+                       Caption = imageSettings == null ? string.Empty : imageSettings.Caption,
+                       ThumbnailPublicUrl = thumbnailUrl,
+                       Title = imageSettings == null ? null : imageSettings.Title,
+                       Position = imageSettings == null ? 0 : imageSettings.Position
+                   };
         }
 
         private string GetMediaPath(string imageGalleryName) {
@@ -205,14 +235,17 @@ namespace Mello.ImageGallery.Services {
             return string.Concat(ImageGalleriesMediaFolder, "\\", imageGalleryName, "\\", imageName);
         }
 
+        private string GetName(string mediaPath) {
+            return mediaPath.Split('\\').Last();
+        }
+
         public void DeleteImage(string imageGalleryName, string imageName) {
             var imageSettings = GetImageSettings(imageGalleryName, imageName);
             DeleteImage(imageGalleryName, imageName, imageSettings);
         }
 
-        public string GetPublicUrl(string path)
-        {
-            return  _mediaService.GetPublicUrl(path);
+        public string GetPublicUrl(string path) {
+            return _mediaService.GetPublicUrl(path);
         }
 
         public bool IsFileAllowed(HttpPostedFileBase file) {
@@ -227,28 +260,22 @@ namespace Mello.ImageGallery.Services {
         }
 
 
-        public void ReorderImages(string imageGalleryName, IEnumerable<string> images)
-        {
+        public void ReorderImages(string imageGalleryName, IEnumerable<string> images) {
             Models.ImageGallery imageGallery = GetImageGallery(imageGalleryName);
             int position = 0;
 
-            foreach (string image in images)
-            {
+            foreach (string image in images) {
                 ImageGalleryImage imageGalleryImage = imageGallery.Images.Single(o => o.Name == image);
                 imageGalleryImage.Position = position++;
-                UpdateImageProperties(imageGalleryName, imageGalleryImage.Name, imageGalleryImage.Title, imageGalleryImage.Caption, imageGalleryImage.Position);
+                UpdateImageProperties(imageGalleryName, imageGalleryImage.Name, imageGalleryImage.Title, imageGalleryImage.Caption,
+                                      imageGalleryImage.Position);
             }
 
-            foreach (ImageGalleryImage imageGalleryImage in imageGallery.Images.Where( o => !images.Contains(o.Name)))
-            {
+            foreach (ImageGalleryImage imageGalleryImage in imageGallery.Images.Where(o => !images.Contains(o.Name))) {
                 imageGalleryImage.Position = position++;
-                UpdateImageProperties(imageGalleryName, imageGalleryImage.Name, imageGalleryImage.Title, imageGalleryImage.Caption, imageGalleryImage.Position);
+                UpdateImageProperties(imageGalleryName, imageGalleryImage.Name, imageGalleryImage.Title, imageGalleryImage.Caption,
+                                      imageGalleryImage.Position);
             }
-
-            //foreach (ImageGalleryImage imageGalleryImage in imageGallery.Images)
-            //{
-            //    UpdateImageProperties(imageGalleryName, imageGalleryImage.Name, imageGalleryImage.Title, imageGalleryImage.Caption, imageGalleryImage.Position);
-            //}
         }
     }
 }

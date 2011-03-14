@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Web;
 
-namespace ImageGallery.ViewModels {
+namespace Mello.ImageGallery.ViewModels {
     public class ImageAddViewModel {
         public string ImageGalleryName { get; set; }
 

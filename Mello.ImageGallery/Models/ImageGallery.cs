@@ -7,6 +7,7 @@ namespace Mello.ImageGallery.Models {
             Images = new List<ImageGalleryImage>();
         }
 
+        public int Id { get; set; }
         public string Name { get; set; }
         public string MediaPath { get; set; }
         public string User { get; set; }

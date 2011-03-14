@@ -1,8 +1,6 @@
-﻿namespace Mello.ImageGallery.Models.Plugins
-{
-  public enum Plugin
-  {
-    LightBox,
-    PrettyPhoto
-  }
+﻿namespace Mello.ImageGallery.Models.Plugins {
+    public enum Plugin {
+        LightBox,
+        PrettyPhoto
+    }
 }
