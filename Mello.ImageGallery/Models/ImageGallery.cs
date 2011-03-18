@@ -16,6 +16,7 @@ namespace Mello.ImageGallery.Models {
 
         public int ThumbnailHeight { get; set; }
         public int ThumbnailWidth { get; set; }
+        public bool KeepAspectRatio { get; set; }
 
         public IEnumerable<ImageGalleryImage> Images { get; set; }
     }

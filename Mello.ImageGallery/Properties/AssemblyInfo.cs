@@ -6,10 +6,10 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Mello.ImageGallery")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("The Image Gallery module provides means to upload images and organize them into galleries. These image galleries are used on Orchard to present images in a beautiful way, leveraging the existing Orchard JQuery feature.")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyProduct("Orchard")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("Gabriel Eduardo Chites de Mello")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,3 +32,4 @@ using System.Runtime.InteropServices;
 // by using the '*' as shown below:
 [assembly: AssemblyVersion("1.0.0.0")]
 [assembly: AssemblyFileVersion("1.0.0.0")]
+

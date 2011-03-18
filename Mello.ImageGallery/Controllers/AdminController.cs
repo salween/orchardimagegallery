@@ -101,7 +101,7 @@ namespace Mello.ImageGallery.Controllers {
 
             try {
                 _imageGalleryService.UpdateImageGalleryProperties(viewModel.ImageGallery.Name, viewModel.ImageGallery.ThumbnailHeight,
-                                                                  viewModel.ImageGallery.ThumbnailWidth);
+                                                                  viewModel.ImageGallery.ThumbnailWidth, viewModel.ImageGallery.KeepAspectRatio);
 
                 if (viewModel.ImageGallery.Name != newName) {
                     _imageGalleryService.RenameImageGallery(viewModel.ImageGallery.Name, newName);

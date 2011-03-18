@@ -10,6 +10,8 @@ namespace Mello.ImageGallery.Models {
 
         public virtual int ThumbnailHeight { get; set; }
 
+        public virtual bool KeepAspectRatio { get; set; }
+
         public virtual IList<ImageGalleryImageSettingsRecord> ImageSettings { get; set; }
     }
 }

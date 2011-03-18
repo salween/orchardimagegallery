@@ -112,7 +112,7 @@ namespace Mello.ImageGallery.Tests {
         [Test]
         public void EditProperties_Post_Should_Save_And_Return_To_Images() {
             // Arrange
-            _imageGalleryServiceMock.Setup(o => o.UpdateImageGalleryProperties("gallery", 80, 100)).Verifiable();
+            _imageGalleryServiceMock.Setup(o => o.UpdateImageGalleryProperties("gallery", 80, 100, false)).Verifiable();
             var imageGallery = new Models.ImageGallery
                                {Name = "gallery", ThumbnailHeight = 80, ThumbnailWidth = 100};
             ImageGalleryEditPropertiesViewModel viewModel = new ImageGalleryEditPropertiesViewModel
