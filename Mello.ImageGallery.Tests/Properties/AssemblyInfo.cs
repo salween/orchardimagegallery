@@ -6,12 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-[assembly: AssemblyTitle("ImageGallery.Tests")]
+[assembly: AssemblyTitle("Mello.ImageGallery.Tests")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Dell Computer Corporation")]
-[assembly: AssemblyProduct("ImageGallery.Tests")]
-[assembly: AssemblyCopyright("Copyright © Dell Computer Corporation 2011")]
+[assembly: AssemblyProduct("Orchard Image Gallery Tests")]
+[assembly: AssemblyCopyright("Gabriel Eduardo Chites de Mello")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

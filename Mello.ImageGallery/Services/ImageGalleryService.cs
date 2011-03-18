@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using ImageGallery.Services;
 using Mello.ImageGallery.Models;
 using Orchard.Data;
 using Orchard.Media.Models;
@@ -12,6 +11,7 @@ namespace Mello.ImageGallery.Services {
     public class ImageGalleryService : IImageGalleryService {
         private const string ImageGalleriesMediaFolder = "ImageGalleries";
         private const int ThumbnailDefaultSize = 100;
+        private const bool DefaultKeepAspectRatio = true;
 
         private readonly IMediaService _mediaService;
         private readonly IThumbnailService _thumbnailService;
@@ -72,16 +72,17 @@ namespace Mello.ImageGallery.Services {
             }
         }
 
-        public void UpdateImageGalleryProperties(string imageGalleryName, int thumbnailHeight, int thumbnailWidth) {
+        public void UpdateImageGalleryProperties(string imageGalleryName, int thumbnailHeight, int thumbnailWidth, bool keepAspectRatio) {
             var imageGallery = GetImageGallery(imageGalleryName);
             var imageGallerySettings = GetImageGallerySettings(imageGallery.MediaPath);
 
             if (imageGallerySettings == null) {
-                CreateImageGallerySettings(imageGallery.MediaPath, thumbnailHeight, thumbnailWidth);
+                CreateImageGallerySettings(imageGallery.MediaPath, thumbnailHeight, thumbnailWidth, keepAspectRatio);
             }
             else {
                 imageGallerySettings.ThumbnailHeight = thumbnailHeight;
                 imageGallerySettings.ThumbnailWidth = thumbnailWidth;
+                imageGallerySettings.KeepAspectRatio = keepAspectRatio;
 
                 _repository.Update(imageGallerySettings);
             }
@@ -169,7 +170,7 @@ namespace Mello.ImageGallery.Services {
             var images = _mediaService.GetMediaFiles(mediaFolder.MediaPath);
             ImageGallerySettingsRecord imageGallerySettings = GetImageGallerySettings(GetName(mediaFolder.MediaPath)) ??
                                                               CreateImageGallerySettings(mediaFolder.MediaPath, ThumbnailDefaultSize,
-                                                                                         ThumbnailDefaultSize);
+                                                                                         ThumbnailDefaultSize, DefaultKeepAspectRatio);
 
             return new Models.ImageGallery
                    {
@@ -181,16 +182,19 @@ namespace Mello.ImageGallery.Services {
                        User = mediaFolder.User,
                        ThumbnailHeight = imageGallerySettings.ThumbnailHeight,
                        ThumbnailWidth = imageGallerySettings.ThumbnailWidth,
-                       Images = images.Select(image => CreateImageFromMediaFile(image, imageGallerySettings)).OrderBy(image => image.Position)
+                       Images = images.Select(image => CreateImageFromMediaFile(image, imageGallerySettings)).OrderBy(image => image.Position),
+                       KeepAspectRatio = imageGallerySettings.KeepAspectRatio
                    };
         }
 
-        private ImageGallerySettingsRecord CreateImageGallerySettings(string imageGalleryMediaPath, int thumbnailHeight, int thumbnailWidth) {
+        private ImageGallerySettingsRecord CreateImageGallerySettings(string imageGalleryMediaPath, int thumbnailHeight, int thumbnailWidth,
+            bool keepAspectRatio) {
             ImageGallerySettingsRecord imageGallerySettings = new ImageGallerySettingsRecord
                                                               {
                                                                   ImageGalleryName = GetName(imageGalleryMediaPath),
                                                                   ThumbnailHeight = thumbnailHeight,
-                                                                  ThumbnailWidth = thumbnailWidth
+                                                                  ThumbnailWidth = thumbnailWidth,
+                                                                  KeepAspectRatio = keepAspectRatio
                                                               };
             _repository.Create(imageGallerySettings);
 
@@ -210,7 +214,8 @@ namespace Mello.ImageGallery.Services {
             if (isValidThumbnailSize) {
                 thumbnailUrl = _thumbnailService.GetThumbnail(mediaFile.FolderName + "\\" + mediaFile.Name,
                                                               imageGallerySettings.ThumbnailWidth,
-                                                              imageGallerySettings.ThumbnailHeight);
+                                                              imageGallerySettings.ThumbnailHeight,
+                                                              imageGallerySettings.KeepAspectRatio);
             }
 
             return new ImageGalleryImage

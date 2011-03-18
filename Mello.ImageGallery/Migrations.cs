@@ -36,5 +36,13 @@ namespace Mello.ImageGallery {
 
             return 1;
         }
+
+        public int UpdateFrom1() {
+            SchemaBuilder.AlterTable("ImageGallerySettingsRecord", table => table
+              .AddColumn<bool>("KeepAspectRatio")
+            );
+
+            return 2;
+        }
     }
 }

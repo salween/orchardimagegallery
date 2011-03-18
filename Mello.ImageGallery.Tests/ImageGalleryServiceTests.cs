@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
-using ImageGallery.Services;
 using Mello.ImageGallery.Models;
 using Mello.ImageGallery.Services;
 using Moq;
@@ -140,12 +139,12 @@ namespace Mello.ImageGallery.Tests {
                 o =>
                 o.Create(
                     It.Is<ImageGallerySettingsRecord>(
-                        record => record.ThumbnailHeight == 200 && record.ThumbnailWidth == 300))).Verifiable();
+                        record => record.ThumbnailHeight == 200 && record.ThumbnailWidth == 300 && record.KeepAspectRatio))).Verifiable();
             _mediaServiceMock.Setup(mediaService => mediaService.GetMediaFolders(It.IsAny<string>())).Returns(
                 TestUtils.GetMediaFolders(5));
 
             // Act
-            _imageGalleryService.UpdateImageGalleryProperties("4", 200, 300);
+            _imageGalleryService.UpdateImageGalleryProperties("4", 200, 300, true);
 
             // Assert
             _mediaServiceMock.Verify();
@@ -159,12 +158,12 @@ namespace Mello.ImageGallery.Tests {
                 o =>
                 o.Update(
                     It.Is<ImageGallerySettingsRecord>(
-                        record => record.ThumbnailHeight == 200 && record.ThumbnailWidth == 300))).Verifiable();
+                        record => record.ThumbnailHeight == 200 && record.ThumbnailWidth == 300 && record.KeepAspectRatio))).Verifiable();
             _mediaServiceMock.Setup(mediaService => mediaService.GetMediaFolders(It.IsAny<string>())).Returns(
                 TestUtils.GetMediaFolders(5));
 
             // Act
-            _imageGalleryService.UpdateImageGalleryProperties("4", 200, 300);
+            _imageGalleryService.UpdateImageGalleryProperties("4", 200, 300, true);
 
             // Assert
             _mediaServiceMock.Verify();
