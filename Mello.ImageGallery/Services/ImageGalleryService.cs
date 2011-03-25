@@ -209,10 +209,10 @@ namespace Mello.ImageGallery.Services {
             var imageSettings = GetImageSettings(imageGallerySettings, mediaFile.Name);
             bool isValidThumbnailSize = imageGallerySettings.ThumbnailWidth > 0 &&
                                         imageGallerySettings.ThumbnailHeight > 0;
-            string thumbnailUrl = string.Empty;
+            Thumbnail thumbnail = null;
 
             if (isValidThumbnailSize) {
-                thumbnailUrl = _thumbnailService.GetThumbnail(mediaFile.FolderName + "\\" + mediaFile.Name,
+                thumbnail = _thumbnailService.GetThumbnail(mediaFile.FolderName + "\\" + mediaFile.Name,
                                                               imageGallerySettings.ThumbnailWidth,
                                                               imageGallerySettings.ThumbnailHeight,
                                                               imageGallerySettings.KeepAspectRatio);
@@ -226,9 +226,9 @@ namespace Mello.ImageGallery.Services {
                        User = mediaFile.User,
                        LastUpdated = mediaFile.LastUpdated,
                        Caption = imageSettings == null ? string.Empty : imageSettings.Caption,
-                       ThumbnailPublicUrl = thumbnailUrl,
+                       Thumbnail = thumbnail,
                        Title = imageSettings == null ? null : imageSettings.Title,
-                       Position = imageSettings == null ? 0 : imageSettings.Position
+                       Position = imageSettings == null ? 0 : imageSettings.Position                       
                    };
         }
 

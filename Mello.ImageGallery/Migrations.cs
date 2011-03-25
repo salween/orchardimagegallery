@@ -42,6 +42,13 @@ namespace Mello.ImageGallery {
               .AddColumn<bool>("KeepAspectRatio")
             );
 
+            ContentDefinitionManager.AlterTypeDefinition("ImageGalleryWidget", cfg => cfg
+            .WithPart("ImageGalleryPart")
+            .WithPart("WidgetPart")
+            .WithPart("CommonPart")
+
+            .WithSetting("Stereotype", "Widget"));
+
             return 2;
         }
     }

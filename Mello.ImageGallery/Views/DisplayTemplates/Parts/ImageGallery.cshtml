@@ -16,7 +16,8 @@
         {
         <li>
             <a href="@image.PublicUrl" title="@image.Title" @Html.ImageGalleryAdditionalAttributes(Model.ImageGalleryPlugin)>
-                <img src="@image.ThumbnailPublicUrl" alt="@image.Caption" />
+                @*<img src="@image.ThumbnailPublicUrl" alt="@image.Caption" />*@
+                @Html.Image(image)
             </a>            
         </li>
         }                     

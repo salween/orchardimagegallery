@@ -14,10 +14,10 @@ namespace Mello.ImageGallery.Models {
 
         public string PublicUrl { get; set; }
 
-        public string ThumbnailPublicUrl { get; set; }
+        public Thumbnail Thumbnail { get; set; }
 
         public string Title { get; set; }
 
-        public int Position { get; set; }
+        public int Position { get; set; }        
     }
 }

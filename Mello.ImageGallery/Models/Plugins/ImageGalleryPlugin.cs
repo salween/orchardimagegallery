@@ -5,5 +5,9 @@
         public virtual string AdditionalHrefMarkup {
             get { return string.Empty; }
         }
+
+        public virtual string ImageGalleryTemplateName {
+            get { return "Parts/ImageGallery"; }
+        }
     }
 }

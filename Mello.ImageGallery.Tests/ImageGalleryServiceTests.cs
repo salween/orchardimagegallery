@@ -87,10 +87,18 @@ namespace Mello.ImageGallery.Tests {
         [Test]
         public void Can_Get_ImageGallery_Images() {
             // Arrange
-            List<MediaFile> mediaFiles = new List<MediaFile>(new[] {new MediaFile {FolderName = "any", Name = "any"}});
+            List<MediaFile> mediaFiles = new List<MediaFile>(new[] {new MediaFile {FolderName = "folder", Name = "image"}});
             _mediaServiceMock.Setup(mediaService => mediaService.GetMediaFolders(It.IsAny<string>())).Returns(
                 TestUtils.GetMediaFolders(5));
             _mediaServiceMock.Setup(mediaService => mediaService.GetMediaFiles(It.IsAny<string>())).Returns(mediaFiles);
+
+            List<ImageGalleryImageSettingsRecord> imageSettingsRecords = new List<ImageGalleryImageSettingsRecord>();
+            imageSettingsRecords.Add(new ImageGalleryImageSettingsRecord() {Name = "image"});
+
+            _repositoryMock.Setup(o => o.Get(It.IsAny<Expression<Func<ImageGallerySettingsRecord, bool>>>()))
+                .Returns(new ImageGallerySettingsRecord{ThumbnailHeight = 100, ThumbnailWidth = 200, ImageSettings = imageSettingsRecords, KeepAspectRatio = true});
+            
+            _thumbnailServiceMock.Setup(thumbnailService => thumbnailService.GetThumbnail("folder\\image", 200, 100, true)).Verifiable();
 
             // Act
             Models.ImageGallery imageGallery = _imageGalleryService.GetImageGallery("gallery");
@@ -98,6 +106,7 @@ namespace Mello.ImageGallery.Tests {
             // Assert
             Assert.IsNotNull(imageGallery);
             Assert.AreEqual(1, imageGallery.Images.Count());
+            _thumbnailServiceMock.Verify();
         }
 
         [Test]

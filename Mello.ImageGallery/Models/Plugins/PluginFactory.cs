@@ -1,5 +1,6 @@
 ﻿using Mello.ImageGallery.Models.Plugins.LightBox;
 using Mello.ImageGallery.Models.Plugins.PrettyPhoto;
+using Mello.ImageGallery.Models.Plugins.SlideViewerPro;
 
 namespace Mello.ImageGallery.Models.Plugins {
     public abstract class PluginFactory {
@@ -7,6 +8,9 @@ namespace Mello.ImageGallery.Models.Plugins {
             if (plugin == Plugins.Plugin.PrettyPhoto) {
                 return new PrettyPhotoFactory();
             }
+          if (plugin == Plugins.Plugin.SlideViewerPro) {
+            return new SlideViewerProFactory();
+          }
 
             return new LightBoxFactory();
         }
