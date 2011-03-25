@@ -7,5 +7,9 @@ namespace Mello.ImageGallery.ViewModels {
         public IEnumerable<ImageGalleryImage> Images { get; set; }
 
         public ImageGalleryPlugin ImageGalleryPlugin { get; set; }
+
+        public int ThumbnailWidth { get; set; }
+
+        public int ThumbnailHeight { get; set; }
     }
 }

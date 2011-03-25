@@ -62,6 +62,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\Images\grip.png" />
+    <Content Include="Content\Plugins\SlideViewerPro\Images\svwloader.gif" />
+    <Content Include="Content\Plugins\SlideViewerPro\Scripts\jquery.slideViewerPro.1.0.js" />
+    <Content Include="Content\Plugins\SlideViewerPro\Scripts\jquery.timers-1.2.js" />
+    <Content Include="Content\Plugins\SlideViewerPro\Styles\svwp_style.css" />
     <Content Include="Placement.info">
       <SubType>Designer</SubType>
     </Content>
@@ -158,6 +162,11 @@
     <Compile Include="Models\Plugins\PrettyPhoto\PrettyPhotoFactory.cs" />
     <Compile Include="Models\Plugins\PrettyPhoto\PrettyPhotoResourceDescriptor.cs" />
     <Compile Include="Models\Plugins\PrettyPhoto\PrettyPhotoSettings.cs" />
+    <Compile Include="Models\Plugins\SlideViewerPro\SlideViewerPro.cs" />
+    <Compile Include="Models\Plugins\SlideViewerPro\SlideViewerProFactory.cs" />
+    <Compile Include="Models\Plugins\SlideViewerPro\SlideViewerProResourceDescriptor.cs" />
+    <Compile Include="Models\Plugins\SlideViewerPro\SlideViewerProSettings.cs" />
+    <Compile Include="Models\Thumbnail.cs" />
     <Compile Include="Permissions.cs" />
     <Compile Include="ResourceManifest.cs" />
     <Compile Include="Services\IImageGalleryService.cs" />
@@ -182,6 +191,7 @@
   <ItemGroup>
     <Content Include="Content\Web.config" />
     <Content Include="Views\DisplayTemplates\Parts\ImageGallerySummaryAdmin.cshtml" />
+    <Content Include="Views\DisplayTemplates\Parts\Plugins\SlideViewerPro.cshtml" />
     <None Include="Views\EditorTemplates\Parts\ImageGallery.cshtml" />
     <None Include="Views\DisplayTemplates\Parts\ImageGallery.cshtml" />
     <Content Include="Web.config" />

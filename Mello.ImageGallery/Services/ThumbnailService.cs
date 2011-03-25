@@ -5,6 +5,7 @@ using System.IO;
 using System.Linq;
 using Orchard.FileSystems.Media;
 using Orchard.Media.Services;
+using Mello.ImageGallery.Models;
 
 namespace Mello.ImageGallery.Services {
     public class ThumbnailService : IThumbnailService {
@@ -43,7 +44,7 @@ namespace Mello.ImageGallery.Services {
         /// <param name="thumbnailHeight">The thumbnail height in pixels.</param>
         /// <param name="keepAspectRatio">Indicates whether to keep the original image aspect ratio</param>
         /// <returns>The thumbnail file media path.</returns>
-        protected string CreateThumbnail(string image, string thumbnailFolderPath, string imageName, int thumbnailWidth,
+        protected Thumbnail CreateThumbnail(string image, string thumbnailFolderPath, string imageName, int thumbnailWidth,
                                          int thumbnailHeight, bool keepAspectRatio) {
             if (thumbnailWidth <= 0) {
                 throw new ArgumentException("Thumbnail width must be greater than zero", "thumbnailWidth");
@@ -57,40 +58,49 @@ namespace Mello.ImageGallery.Services {
 
             IStorageFile imageFile = _storageProvider.GetFile(image);
             using (Stream imageStream = imageFile.OpenRead()) {
-                using (Image drawingImage = Image.FromStream(imageStream)) {
+                using (Image drawingImage = Image.FromStream(imageStream))
+                {
+                    bool shouldCreateImage = true;
 
-                  // Verify if the image already have a Thumbnail
-                  var thumbnailName = _mediaService.GetMediaFiles(thumbnailFolderPath)
+                    // Verify if the image already have a Thumbnail
+                    var thumbnailName = _mediaService.GetMediaFiles(thumbnailFolderPath)
                                         .Select(o => o.Name).SingleOrDefault(o => o == imageName);
 
-                  if(thumbnailName != null) {
-                      // Verify if the existing thumbnail has the correct size
-                      IStorageFile thumbnailFile = _storageProvider.GetFile(thumbnailFilePath);
-                      using (Stream thumnailFileStream = thumbnailFile.OpenRead()) {
-                          using (Image thumbnailImage = Image.FromStream(thumnailFileStream)) {
-                              if (ImageHasCorrectThumbnail(drawingImage, thumbnailImage, thumbnailWidth, thumbnailHeight, keepAspectRatio)) {
-                                  return thumbnailFilePath;
-                              }
-                          }
-                      }
-                  }
-
-                  using (Image thumbDrawing = CreateThumbnail(drawingImage, thumbnailWidth, thumbnailHeight, keepAspectRatio)) {
-
-                        if (_storageProvider.ListFiles(thumbnailFolderPath).Select(o => o.GetName()).Contains(imageName)) {
-                            _storageProvider.DeleteFile(thumbnailFilePath);
+                    if(thumbnailName != null) {
+                        // Verify if the existing thumbnail has the correct size
+                        IStorageFile thumbnailFile = _storageProvider.GetFile(thumbnailFilePath);
+                        using (Stream thumnailFileStream = thumbnailFile.OpenRead()) {
+                            using (Image thumbnailImage = Image.FromStream(thumnailFileStream)) {
+                                if (ImageHasCorrectThumbnail(drawingImage, thumbnailImage, thumbnailWidth, thumbnailHeight, keepAspectRatio))
+                                {
+                                    shouldCreateImage = false;
+                                    thumbnailWidth = thumbnailImage.Width;
+                                    thumbnailHeight = thumbnailImage.Height;
+                                }
+                            }
                         }
+                    }
 
-                        IStorageFile thumbFile = _storageProvider.CreateFile(thumbnailFilePath);
+                    if (shouldCreateImage) {
+                        using (Image thumbDrawing = CreateThumbnail(drawingImage, thumbnailWidth, thumbnailHeight,keepAspectRatio)) {
+                            if (_storageProvider.ListFiles(thumbnailFolderPath).Select(o => o.GetName()).Contains(imageName)) {
+                                _storageProvider.DeleteFile(thumbnailFilePath);
+                            }
 
-                        using (Stream thumbStream = thumbFile.OpenWrite()) {
-                            thumbDrawing.Save(thumbStream, _thumbnailImageFormat);
+                            IStorageFile thumbFile = _storageProvider.CreateFile(thumbnailFilePath);
+                            using (Stream thumbStream = thumbFile.OpenWrite())
+                            {
+                                thumbDrawing.Save(thumbStream, _thumbnailImageFormat);
+                                thumbnailWidth = thumbDrawing.Width;
+                                thumbnailHeight = thumbDrawing.Height;
+                            }
                         }
                     }
                 }
-            }
+            }   
 
-            return thumbnailFilePath;
+            string thumbnailPublicUrl = string.Concat(_mediaService.GetPublicUrl(thumbnailFolderPath), "/", imageName);
+            return new Thumbnail {PublicUrl = thumbnailPublicUrl, Width = thumbnailWidth, Height = thumbnailHeight};
         }
 
         protected Image CreateThumbnail(Image originalImage, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio) {
@@ -118,7 +128,7 @@ namespace Mello.ImageGallery.Services {
             return newImage;
         }
 
-        private void GetThumbnailSize(Image originalImage, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio, out int newWidth, out int newHeight)
+        protected void GetThumbnailSize(Image originalImage, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio, out int newWidth, out int newHeight)
         {
             newWidth = thumbnailWidth;
             newHeight = thumbnailHeight;
@@ -155,7 +165,7 @@ namespace Mello.ImageGallery.Services {
         /// <param name="thumbnailHeight">The thumbnail height in pixels.</param>
         /// <param name="keepAspectRatio">Indicates whether to keep the original image aspect ratio</param>
         /// <returns>The thumbnail full path on the media storage.</returns>
-        public string GetThumbnail(string image, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio) {
+        public Thumbnail GetThumbnail(string image, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio) {
             if(image == null)  
               throw new ArgumentNullException("image");
 
@@ -163,9 +173,7 @@ namespace Mello.ImageGallery.Services {
             string mediaPath = image.Substring(0, image.Length - imageName.Length - 1);
             string thumbnailFolderPath = GetThumbnailFolder(mediaPath);
 
-            string thumbnailName = GetMediaName(CreateThumbnail(image, thumbnailFolderPath, imageName, thumbnailWidth, thumbnailHeight, keepAspectRatio));           
-
-            return string.Concat(_mediaService.GetPublicUrl(thumbnailFolderPath), "/", thumbnailName);
+            return CreateThumbnail(image, thumbnailFolderPath, imageName, thumbnailWidth, thumbnailHeight, keepAspectRatio);
         }        
     }
 }

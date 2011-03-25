@@ -14,8 +14,10 @@ namespace Mello.ImageGallery.Drivers {
     public class ImageGalleryDriver : ContentPartDriver<ImageGalleryPart> {
         private readonly IImageGalleryService _imageGalleryService;
         private readonly IWorkContextAccessor _workContextAccessor;
+        private readonly IThumbnailService _thumbnailService;
 
-        public ImageGalleryDriver(IImageGalleryService imageGalleryService, IWorkContextAccessor workContextAccessor) {
+        public ImageGalleryDriver(IImageGalleryService imageGalleryService, IThumbnailService thumbnailService, IWorkContextAccessor workContextAccessor) {
+            _thumbnailService = thumbnailService;
             _workContextAccessor = workContextAccessor;
             _imageGalleryService = imageGalleryService;
         }
@@ -49,11 +51,11 @@ namespace Mello.ImageGallery.Drivers {
             RegisterStaticContent(pluginFactory.PluginResourceDescriptor);
 
             ImageGalleryViewModel viewModel = new ImageGalleryViewModel {ImageGalleryPlugin = pluginFactory.Plugin};
-            viewModel.Images = imageGallery.Images;
+            viewModel.Images = imageGallery.Images;           
 
             return ContentShape("Parts_ImageGallery",
                                 () => shapeHelper.DisplayTemplate(
-                                    TemplateName: "Parts/ImageGallery",
+                                    TemplateName: pluginFactory.Plugin.ImageGalleryTemplateName,//"Parts/ImageGallery",
                                     Model: viewModel,
                                     Prefix: Prefix));
         }
