@@ -134,15 +134,17 @@ namespace Mello.ImageGallery.Services {
             newHeight = thumbnailHeight;
 
             if (keepAspectRatio) {
-                double aspectRatio = originalImage.Width / (double)originalImage.Height;
-
-                if (aspectRatio <= 1 && originalImage.Width > thumbnailWidth) {
+                if (originalImage.Width > originalImage.Height)
+                {
                     newWidth = thumbnailWidth;
-                    newHeight = (int)Math.Round(newWidth / aspectRatio);
+                    float widthPer = (float)thumbnailWidth / originalImage.Width;
+                    newHeight = Convert.ToInt32(originalImage.Height * widthPer);
                 }
-                else if (aspectRatio > 1 && originalImage.Height > thumbnailHeight) {
+                else
+                {
                     newHeight = thumbnailHeight;
-                    newWidth = (int)Math.Round(newHeight * aspectRatio);
+                    float heightPer = (float)thumbnailHeight / originalImage.Height;
+                    newWidth = Convert.ToInt32(originalImage.Width * heightPer);
                 }
             }
         }
