@@ -1,7 +1,7 @@
 @model Mello.ImageGallery.ViewModels.ImageAddViewModel
 @{ Script.Require("jQueryMultiFile").AtHead(); }
            
-<h1>@Html.TitleForPage(T("Add Images").ToString())</h1>
+@{ Layout.Title = T("Add Images").ToString(); }
 
 @using (Html.BeginForm("AddImages", "Admin", FormMethod.Post, new { enctype = "multipart/form-data" })) {
     @Html.ValidationSummary()

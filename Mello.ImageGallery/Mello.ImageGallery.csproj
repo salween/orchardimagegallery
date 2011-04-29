@@ -10,7 +10,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Mello.ImageGallery</RootNamespace>
-    <AssemblyName>ImageGallery</AssemblyName>
+    <AssemblyName>Mello.ImageGallery</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <FileUpgradeFlags>
@@ -18,6 +18,7 @@
     <OldToolsVersion>3.5</OldToolsVersion>
     <UpgradeBackupLocation />
     <TargetFrameworkProfile />
+    <UseIISExpress>false</UseIISExpress>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -116,6 +117,8 @@
     <Content Include="Content\Plugins\LightBox\Styles\jquery.lightbox-0.5.css" />
     <None Include="Views\Admin\AddImages.cshtml" />
     <Content Include="Styles\image-gallery.css" />
+    <Content Include="Styles\menu.imagegallery-admin.css" />
+    <Content Include="Styles\images\menu.imagegallery.png" />
     <Content Include="Views\Admin\EditProperties.cshtml" />
     <Content Include="Views\Admin\EditImage.cshtml" />
     <None Include="Views\Admin\Index.cshtml" />

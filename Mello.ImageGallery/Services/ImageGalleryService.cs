@@ -261,7 +261,7 @@ namespace Mello.ImageGallery.Services {
             if (imageSettings != null) {
                 _imageRepository.Delete(imageSettings);
             }
-            _mediaService.DeleteFile(imageName, GetMediaPath(imageGalleryName));
+            _mediaService.DeleteFile(GetMediaPath(imageGalleryName), imageName);
         }
 
 

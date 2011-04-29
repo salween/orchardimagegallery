@@ -2,7 +2,7 @@
 @using Orchard.Media.Extensions           
 @{ Style.Require("ImageGalleryAdmin"); }
            
-<h1>@Html.TitleForPage(T("Edit Image").ToString())</h1>
+@{ Layout.Title = T("Edit Image - {0}", Model.Image.Name).ToString(); }
 
 <div class="sections clearBoth">
     <div class="primary">
@@ -41,7 +41,7 @@
             </fieldset>            
             <fieldset>
                 <button class="primaryAction" type="submit" name="submit.Save" value="@T("Save")">@T("Save")</button>
-                <button type="submit" name="submit.DeleteImage" value="@T("Remove")">@T("Remove")</button>
+                <button type="submit" name="submit.DeleteImage" value="@T("Delete")">@T("Delete")</button>
                 @Html.ActionLink("Back", "Images", new { imageGalleryName = Model.ImageGalleryName }, new { Class = "button"})
             </fieldset>        
         }

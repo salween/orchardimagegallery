@@ -1,7 +1,7 @@
 @model Mello.ImageGallery.ViewModels.ImageGalleryIndexViewModel
 @using Orchard.Media.Extensions
            
-<h1>@Html.TitleForPage(T("Manage Image Galleries").ToString())</h1>
+@{ Layout.Title = T("Image Gallery").ToString(); }
 
 <div class="manage">@Html.ActionLink(T("Add new Image Gallery").ToString(), "Create", new { }, new { @class = "button primaryAction" })</div>
 
