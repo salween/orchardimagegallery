@@ -1,6 +1,6 @@
 ﻿@model Mello.ImageGallery.ViewModels.ImageGalleryEditPropertiesViewModel
 
-<h1>@Html.TitleForPage(T("Image Gallery Properties").ToString())</h1>
+@{ Layout.Title = T("Image Gallery Properties").ToString(); }
 
 @using (Html.BeginFormAntiForgeryPost()) {
     @Html.ValidationSummary()
@@ -25,7 +25,7 @@
     
     <fieldset>        
         <button class="primaryAction" type="submit" name="submit.Save" value="@T("Save")">@T("Save")</button>
-        <button type="submit" name="submit.Delete" value="@T("Remove")">@T("Remove")</button>
+        <button type="submit" name="submit.Delete" value="@T("Delete")">@T("Delete")</button>
         @Html.ActionLink("Back", "Images", new { imageGalleryName = Model.ImageGallery.Name }, new { Class = "button"})
     </fieldset>
 }

@@ -14,7 +14,8 @@ namespace Mello.ImageGallery {
         }
 
         public void GetNavigation(NavigationBuilder builder) {
-            builder.Add(T("Image Gallery"), "7",
+          builder.AddImageSet("imagegallery")
+            .Add(T("Image Gallery"), "7",
                         menu => menu.Add(T("Image Gallery"), "0", item => item.Action("Index", "Admin", new {area = "Mello.ImageGallery"})
                                                                               .Permission(Permissions.ManageImageGallery)));
         }

@@ -4,5 +4,239 @@
         <name>Orchard.Media</name>
     </assembly>
     <members>
+        <member name="M:Orchard.Media.Services.IMediaService.GetPublicUrl(System.String)">
+            <summary>
+            Retrieves the public path based on the relative path within the media directory.
+            </summary>
+            <example>
+            "/Media/Default/InnerDirectory/Test.txt" based on the input "InnerDirectory/Test.txt"
+            </example>
+            <param name="relativePath">The relative path within the media directory.</param>
+            <returns>The public path relative to the application url.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.GetMediaFolders(System.String)">
+            <summary>
+            Retrieves the media folders within a given relative path.
+            </summary>
+            <param name="relativePath">The path where to retrieve the media folder from. null means root.</param>
+            <returns>The media folder in the given path.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.GetMediaFiles(System.String)">
+            <summary>
+            Retrieves the media files within a given relative path.
+            </summary>
+            <param name="relativePath">The path where to retrieve the media files from. null means root.</param>
+            <returns>The media files in the given path.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.CreateFolder(System.String,System.String)">
+            <summary>
+            Creates a media folder.
+            </summary>
+            <param name="relativePath">The path where to create the new folder. null means root.</param>
+            <param name="folderName">The name of the folder to be created.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.DeleteFolder(System.String)">
+            <summary>
+            Deletes a media folder.
+            </summary>
+            <param name="folderPath">The path to the folder to be deleted.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.RenameFolder(System.String,System.String)">
+            <summary>
+            Renames a media folder.
+            </summary>
+            <param name="folderPath">The path to the folder to be renamed.</param>
+            <param name="newFolderName">The new folder name.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.DeleteFile(System.String,System.String)">
+            <summary>
+            Deletes a media file.
+            </summary>
+            <param name="folderPath">The folder path.</param>
+            <param name="fileName">The file name.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.RenameFile(System.String,System.String,System.String)">
+            <summary>
+            Renames a media file.
+            </summary>
+            <param name="folderPath">The path to the file's parent folder.</param>
+            <param name="currentFileName">The current file name.</param>
+            <param name="newFileName">The new file name.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.UploadMediaFile(System.String,System.Web.HttpPostedFileBase,System.Boolean)">
+            <summary>
+            Uploads a media file based on a posted file.
+            </summary>
+            <param name="folderPath">The path to the folder where to upload the file.</param>
+            <param name="postedFile">The file to upload.</param>
+            <param name="extractZip">Boolean value indicating weather zip files should be extracted.</param>
+            <returns>The path to the uploaded file.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.UploadMediaFile(System.String,System.String,System.Byte[],System.Boolean)">
+            <summary>
+            Uploads a media file based on an array of bytes.
+            </summary>
+            <param name="folderPath">The path to the folder where to upload the file.</param>
+            <param name="fileName">The file name.</param>
+            <param name="bytes">The array of bytes with the file's contents.</param>
+            <param name="extractZip">Boolean value indicating weather zip files should be extracted.</param>
+            <returns>The path to the uploaded file.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.UploadMediaFile(System.String,System.String,System.IO.Stream,System.Boolean)">
+            <summary>
+            Uploads a media file based on a stream.
+            </summary>
+            <param name="folderPath">The folder path to where to upload the file.</param>
+            <param name="fileName">The file name.</param>
+            <param name="inputStream">The stream with the file's contents.</param>
+            <param name="extractZip">Boolean value indicating weather zip files should be extracted.</param>
+            <returns>The path to the uploaded file.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.FileAllowed(System.Web.HttpPostedFileBase)">
+            <summary>
+            Verifies if a file is allowed based on its name and the policies defined by the black / white lists.
+            </summary>
+            <param name="postedFile">The posted file</param>
+            <returns>True if the file is allowed; false if otherwise.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.IMediaService.FileAllowed(System.String,System.Boolean)">
+            <summary>
+            Verifies if a file is allowed based on its name and the policies defined by the black / white lists.
+            </summary>
+            <param name="fileName">The file name of the file to validate.</param>
+            <param name="allowZip">Boolean value indicating weather zip files are allowed.</param>
+            <returns>True if the file is allowed; false if otherwise.</returns>
+        </member>
+        <member name="T:Orchard.Media.Services.MediaService">
+            <summary>
+            The MediaService class provides the services o manipulate media entities (files / folders).
+            Among other things it provides filtering functionalities on file types.
+            The actual manipulation of the files is, however, delegated to the IStorageProvider.
+            </summary>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.#ctor(Orchard.FileSystems.Media.IStorageProvider,Orchard.IOrchardServices)">
+            <summary>
+            Initializes a new instance of the MediaService class with a given IStorageProvider and IOrchardServices.
+            </summary>
+            <param name="storageProvider">The storage provider.</param>
+            <param name="orchardServices">The orchard services provider.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.GetPublicUrl(System.String)">
+            <summary>
+            Retrieves the public path based on the relative path within the media directory.
+            </summary>
+            <example>
+            "/Media/Default/InnerDirectory/Test.txt" based on the input "InnerDirectory/Test.txt"
+            </example>
+            <param name="relativePath">The relative path within the media directory.</param>
+            <returns>The public path relative to the application url.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.GetMediaFolders(System.String)">
+            <summary>
+            Retrieves the media folders within a given relative path.
+            </summary>
+            <param name="relativePath">The path where to retrieve the media folder from. null means root.</param>
+            <returns>The media folder in the given path.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.GetMediaFiles(System.String)">
+            <summary>
+            Retrieves the media files within a given relative path.
+            </summary>
+            <param name="relativePath">The path where to retrieve the media files from. null means root.</param>
+            <returns>The media files in the given path.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.CreateFolder(System.String,System.String)">
+            <summary>
+            Creates a media folder.
+            </summary>
+            <param name="relativePath">The path where to create the new folder. null means root.</param>
+            <param name="folderName">The name of the folder to be created.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.DeleteFolder(System.String)">
+            <summary>
+            Deletes a media folder.
+            </summary>
+            <param name="folderPath">The path to the folder to be deleted.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.RenameFolder(System.String,System.String)">
+            <summary>
+            Renames a media folder.
+            </summary>
+            <param name="folderPath">The path to the folder to be renamed.</param>
+            <param name="newFolderName">The new folder name.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.DeleteFile(System.String,System.String)">
+            <summary>
+            Deletes a media file.
+            </summary>
+            <param name="folderPath">The folder path.</param>
+            <param name="fileName">The file name.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.RenameFile(System.String,System.String,System.String)">
+            <summary>
+            Renames a media file.
+            </summary>
+            <param name="folderPath">The path to the file's parent folder.</param>
+            <param name="currentFileName">The current file name.</param>
+            <param name="newFileName">The new file name.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.UploadMediaFile(System.String,System.Web.HttpPostedFileBase,System.Boolean)">
+            <summary>
+            Uploads a media file based on a posted file.
+            </summary>
+            <param name="folderPath">The path to the folder where to upload the file.</param>
+            <param name="postedFile">The file to upload.</param>
+            <param name="extractZip">Boolean value indicating weather zip files should be extracted.</param>
+            <returns>The path to the uploaded file.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.UploadMediaFile(System.String,System.String,System.Byte[],System.Boolean)">
+            <summary>
+            Uploads a media file based on an array of bytes.
+            </summary>
+            <param name="folderPath">The path to the folder where to upload the file.</param>
+            <param name="fileName">The file name.</param>
+            <param name="bytes">The array of bytes with the file's contents.</param>
+            <param name="extractZip">Boolean value indicating weather zip files should be extracted.</param>
+            <returns>The path to the uploaded file.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.UploadMediaFile(System.String,System.String,System.IO.Stream,System.Boolean)">
+            <summary>
+            Uploads a media file based on a stream.
+            </summary>
+            <param name="folderPath">The folder path to where to upload the file.</param>
+            <param name="fileName">The file name.</param>
+            <param name="inputStream">The stream with the file's contents.</param>
+            <param name="extractZip">Boolean value indicating weather zip files should be extracted.</param>
+            <returns>The path to the uploaded file.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.FileAllowed(System.Web.HttpPostedFileBase)">
+            <summary>
+            Verifies if a file is allowed based on its name and the policies defined by the black / white lists.
+            </summary>
+            <param name="postedFile">The posted file</param>
+            <returns>True if the file is allowed; false if otherwise.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.FileAllowed(System.String,System.Boolean)">
+            <summary>
+            Verifies if a file is allowed based on its name and the policies defined by the black / white lists.
+            </summary>
+            <param name="fileName">The file name of the file to validate.</param>
+            <param name="allowZip">Boolean value indicating weather zip files are allowed.</param>
+            <returns>True if the file is allowed; false if otherwise.</returns>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.UnzipMediaFileArchive(System.String,System.IO.Stream)">
+            <summary>
+            Unzips a media archive file.
+            </summary>
+            <param name="targetFolder">The folder where to unzip the file.</param>
+            <param name="zipStream">The archive file stream.</param>
+        </member>
+        <member name="M:Orchard.Media.Services.MediaService.IsZipFile(System.String)">
+            <summary>
+            Determines if a file is a Zip Archive based on its extension.
+            </summary>
+            <param name="extension">The extension of the file to analyze.</param>
+            <returns>True if the file is a Zip archive; false otherwise.</returns>
+        </member>
     </members>
 </doc>
