@@ -236,7 +236,7 @@ namespace Mello.ImageGallery.Tests {
         public void Can_Delete_Image() {
             // Arrange
             _imageRepositoryMock.Setup(o => o.Delete(It.IsAny<ImageGalleryImageSettingsRecord>())).Verifiable();
-            _mediaServiceMock.Setup(o => o.DeleteFile("image1", ImageGalleryFolderName + "\\gallery")).Verifiable();
+            _mediaServiceMock.Setup(o => o.DeleteFile(ImageGalleryFolderName + "\\gallery", "image1")).Verifiable();
 
             // Act
             _imageGalleryService.DeleteImage("gallery", "image1");
