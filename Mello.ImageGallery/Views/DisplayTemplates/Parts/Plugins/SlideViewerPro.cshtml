@@ -4,12 +4,15 @@
 
 @model Mello.ImageGallery.ViewModels.ImageGalleryViewModel
 
+@using (Script.Head()) {
+
 <script type="text/javascript">   
-    //$(window).load(function () {
     $(document).ready(function () {
         @Html.ImageGalleryScript("#slideshow", Model.ImageGalleryPlugin) 
     });
 </script>
+    
+}
 
 <div id="slideshow">
     <ul>

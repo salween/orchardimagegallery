@@ -1,6 +1,5 @@
 ﻿
 $(document).ready(function () {
-    //debugger;
     $('#images tbody').sortable({ update: Update }).disableSelection();
 });
 
@@ -8,10 +7,6 @@ function Update(event, ui) {
     var images = new Array();
 
     $(".name").each(function () {
-//        var imagePosition = new Object();
-//        imagePosition.Name = this.innerText;
-//        imagePosition.Position = this.parentElement.rowIndex;
-//        images.push(imagePosition);
 
         images.push(this.innerText);
     });

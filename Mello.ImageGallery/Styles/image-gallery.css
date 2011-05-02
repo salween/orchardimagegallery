@@ -1,20 +1,20 @@
 ﻿/** This style will be present at every image gallery, regardless of the plugin used **/
 
-#gallery {
+.image-gallery {
 	background-color: #fff;
 	padding: 10px;	
 }
-#gallery ul {
+.image-gallery ul {
     list-style: none;
 }
-#gallery ul li { display: inline; }
-#gallery ul img {
+.image-gallery ul li { display: inline; }
+.image-gallery ul img {
 	border: 2px black solid;
 	-webkit-border-radius:5px;
 	border-radius:5px;
 	padding:2px;
 }
-#gallery ul a:hover img {
+.image-gallery ul a:hover img {
 	border: 2px solid #434343;
 }
-#gallery ul a:hover { color: #fff; }
+.image-gallery ul a:hover { color: #fff; }
