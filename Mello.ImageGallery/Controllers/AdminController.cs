@@ -122,7 +122,7 @@ namespace Mello.ImageGallery.Controllers {
                 return new HttpUnauthorizedResult();
             }
 
-            return View(new ImageAddViewModel());
+            return View(new ImageAddViewModel { AllowedFiles = _imageGalleryService.AllowedFileFormats });
         }
 
         [HttpPost]
@@ -130,15 +130,16 @@ namespace Mello.ImageGallery.Controllers {
             if (!Services.Authorizer.Authorize(Permissions.ManageImageGallery, T("Couldn't upload media file"))) {
                 return new HttpUnauthorizedResult();
             }
+            viewModel.AllowedFiles = _imageGalleryService.AllowedFileFormats;
 
             if (!ModelState.IsValid)
                 return View(viewModel);
 
             try {
-                if (viewModel.ImageFiles == null || viewModel.ImageFiles.Count() == 0) {
+                if (viewModel.ImageFiles == null || viewModel.ImageFiles.Count() == 0 || viewModel.ImageFiles.First() == null) {
                     ModelState.AddModelError("File", T("Select a file to upload").ToString());
 
-                    return View(new ImageAddViewModel());
+                    return View(viewModel);
                 }
 
                 if (viewModel.ImageFiles.Any(file => !_imageGalleryService.IsFileAllowed(file))) {
@@ -152,7 +153,7 @@ namespace Mello.ImageGallery.Controllers {
             }
             catch (Exception exception) {
                 Services.Notifier.Error(T("Adding image failed: {0}", exception.Message));
-                return View(new ImageAddViewModel());
+                return View(viewModel);
             }
 
             return RedirectToAction("Images", new {imageGalleryName = viewModel.ImageGalleryName});

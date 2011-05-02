@@ -182,16 +182,34 @@ namespace Mello.ImageGallery.Tests {
         [Test]
         public void Can_Add_Image_To_ImageGallery() {
             // Arrange
-            var fileMock = new Mock<System.Web.HttpPostedFileBase>().Object;
+            Mock<System.Web.HttpPostedFileBase> fileMock = new Mock<System.Web.HttpPostedFileBase>();
+            fileMock.Setup(o => o.FileName).Returns("file.png");
+
             _mediaServiceMock.Setup(
-                mediaService => mediaService.UploadMediaFile(ImageGalleryFolderName + "\\gallery", fileMock, false)).
+                mediaService => mediaService.UploadMediaFile(ImageGalleryFolderName + "\\gallery", "file.png", fileMock.Object.InputStream, false)).
                 Verifiable();
 
+            _mediaServiceMock.Setup(o => o.FileAllowed("file.png", true)).Returns(true);
+
             // Act
-            _imageGalleryService.AddImage("gallery", fileMock);
+            _imageGalleryService.AddImage("gallery", fileMock.Object);
 
             // Assert
             _mediaServiceMock.Verify();
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void Should_Not_Upload_Invalid_File()
+        {
+          // Arrange
+          Mock<System.Web.HttpPostedFileBase> fileMock = new Mock<System.Web.HttpPostedFileBase>();
+          fileMock.Setup(o => o.FileName).Returns("file.exe");
+
+          _mediaServiceMock.Setup(o => o.FileAllowed("file.png", true)).Returns(false);
+
+          // Act
+          _imageGalleryService.AddImage("gallery", fileMock.Object);
         }
 
         [Test]
