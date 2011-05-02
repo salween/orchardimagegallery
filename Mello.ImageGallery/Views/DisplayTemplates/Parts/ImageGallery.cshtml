@@ -4,19 +4,22 @@
 
 @model Mello.ImageGallery.ViewModels.ImageGalleryViewModel
 
-<script type="text/javascript">
-    $(document).ready(function () {        
-        @Html.ImageGalleryScript("#gallery a", Model.ImageGalleryPlugin) 
+@using (Script.Head()) {
+    
+<script type="text/javascript">    
+    $(document).ready(function () {
+        @Html.ImageGalleryScript(".image-gallery a", Model.ImageGalleryPlugin) 
     });
 </script>
+    
+}
 
-<div id="gallery">
+<div class="image-gallery">
     <ul>
         @foreach (var image in Model.Images)
         {
         <li>
             <a href="@image.PublicUrl" title="@image.Title" @Html.ImageGalleryAdditionalAttributes(Model.ImageGalleryPlugin)>
-                @*<img src="@image.ThumbnailPublicUrl" alt="@image.Caption" />*@
                 @Html.Image(image)
             </a>            
         </li>

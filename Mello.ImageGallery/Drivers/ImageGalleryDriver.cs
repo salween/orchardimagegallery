@@ -25,12 +25,17 @@ namespace Mello.ImageGallery.Drivers {
         private void RegisterStaticContent(PluginResourceDescriptor pluginResourceDescriptor) {
             IResourceManager resourceManager = _workContextAccessor.GetContext().Resolve<IResourceManager>();
 
-            foreach (string script in pluginResourceDescriptor.Scripts) {
-                resourceManager.RegisterHeadScript(script);
-            }
+            var links = resourceManager.GetRegisteredLinks();
+            bool isIncluded = links.Any(link => link.Href.Contains("imagegallery")); // not yet added scripts and styles
 
-            foreach (LinkEntry style in pluginResourceDescriptor.Styles) {
-                resourceManager.RegisterLink(style);
+            if (!isIncluded){ // if not added any styles or scripts, then add          
+                foreach (string script in pluginResourceDescriptor.Scripts) {
+                    resourceManager.RegisterHeadScript(script);
+                }
+
+                foreach (LinkEntry style in pluginResourceDescriptor.Styles) {
+                    resourceManager.RegisterLink(style);
+                }
             }
 
             resourceManager.Require("script", "jQuery").AtHead();
@@ -61,8 +66,7 @@ namespace Mello.ImageGallery.Drivers {
         }
 
         //GET
-        protected override DriverResult Editor(
-            ImageGalleryPart part, dynamic shapeHelper) {
+        protected override DriverResult Editor(ImageGalleryPart part, dynamic shapeHelper) {
             part.AvailableGalleries = _imageGalleryService.GetImageGalleries()
                 .OrderBy(o => o.Name).Select(o => new SelectListItem
                                                   {
@@ -94,8 +98,7 @@ namespace Mello.ImageGallery.Drivers {
         }
 
         //POST
-        protected override DriverResult Editor(
-            ImageGalleryPart part, IUpdateModel updater, dynamic shapeHelper) {
+        protected override DriverResult Editor(ImageGalleryPart part, IUpdateModel updater, dynamic shapeHelper) {
             updater.TryUpdateModel(part, Prefix, null, null);
             part.ImageGalleryName = part.SelectedGallery;
             return Editor(part, shapeHelper);
