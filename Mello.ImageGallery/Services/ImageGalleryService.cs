@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Web;
+using ICSharpCode.SharpZipLib.Zip;
 using Mello.ImageGallery.Models;
 using Orchard.Data;
 using Orchard.Media.Models;
 using Orchard.Media.Services;
+using Orchard.Validation;
 
 namespace Mello.ImageGallery.Services {
     public class ImageGalleryService : IImageGalleryService {
@@ -34,7 +37,15 @@ namespace Mello.ImageGallery.Services {
             }
         }
 
-        public IEnumerable<Models.ImageGallery> GetImageGalleries() {
+      private readonly IList<string> _imageFileFormats = new[] { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
+      private readonly IList<string> _fileFormats = new[] { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF", "ZIP" };
+
+      public IEnumerable<string> AllowedFileFormats
+      {
+        get { return _fileFormats; }
+      }
+
+      public IEnumerable<Models.ImageGallery> GetImageGalleries() {
             return _mediaService.GetMediaFolders(ImageGalleriesMediaFolder).Select(CreateImageGalleryFromMediaFolder);
         }
 
@@ -114,8 +125,22 @@ namespace Mello.ImageGallery.Services {
             return null;
         }
 
-        public void AddImage(string imageGalleryName, HttpPostedFileBase imageFile) {
-            _mediaService.UploadMediaFile(GetMediaPath(imageGalleryName), imageFile, false);
+        public void AddImage(string imageGalleryName, HttpPostedFileBase imageFile) {            
+            AddImage(imageGalleryName, imageFile.FileName, imageFile.InputStream);
+        }
+
+        public void AddImage(string imageGalleryName, string fileName, Stream imageFile){
+            if(!IsFileAllowed(fileName, true)) {
+              throw new InvalidOperationException(string.Format("{0} is not a valid file.", fileName));
+            }
+
+            // Zip file processing is different from Media module since we want the folders structure to be flattened
+            if (IsZipFile(Path.GetExtension(fileName))) {
+              UnzipMediaFileArchive(imageGalleryName, imageFile);
+            }
+            else {
+              _mediaService.UploadMediaFile(GetMediaPath(imageGalleryName), fileName, imageFile, false);
+            }
         }
 
         public void UpdateImageProperties(string imageGalleryName, string imageName, string imageTitle, string imageCaption) {
@@ -220,7 +245,7 @@ namespace Mello.ImageGallery.Services {
 
             return new ImageGalleryImage
                    {
-                       PublicUrl = _mediaService.GetPublicUrl(System.IO.Path.Combine(mediaFile.FolderName, mediaFile.Name)),
+                       PublicUrl = _mediaService.GetPublicUrl(Path.Combine(mediaFile.FolderName, mediaFile.Name)),
                        Name = mediaFile.Name,
                        Size = mediaFile.Size,
                        User = mediaFile.User,
@@ -253,9 +278,28 @@ namespace Mello.ImageGallery.Services {
             return _mediaService.GetPublicUrl(path);
         }
 
-        public bool IsFileAllowed(HttpPostedFileBase file) {
-            return _mediaService.FileAllowed(file);
+        public bool IsFileAllowed(string fileName, bool allowZip) {
+            return (IsImageFile(fileName) || (allowZip && IsZipFile(Path.GetExtension(fileName)))) && _mediaService.FileAllowed(fileName, allowZip);
         }
+
+        public bool IsFileAllowed(HttpPostedFileBase postedFile) {
+            if (postedFile == null)
+            {
+              return false;
+            }
+
+            return IsFileAllowed(postedFile.FileName, true);
+        }
+
+        private bool IsImageFile(string fileName)
+        {
+          string extension = Path.GetExtension(fileName);
+          if(extension == null)
+            return false;
+          extension = extension.TrimStart('.');
+
+          return _imageFileFormats.Any(o => extension.Equals(o, StringComparison.OrdinalIgnoreCase));
+        }        
 
         private void DeleteImage(string imageGalleryName, string imageName, ImageGalleryImageSettingsRecord imageSettings) {
             if (imageSettings != null) {
@@ -281,6 +325,45 @@ namespace Mello.ImageGallery.Services {
                 UpdateImageProperties(imageGalleryName, imageGalleryImage.Name, imageGalleryImage.Title, imageGalleryImage.Caption,
                                       imageGalleryImage.Position);
             }
+        }
+
+        // TODO: Submit a path to Media module to make this method public?
+        /// <summary>
+        /// Determines if a file is a Zip Archive based on its extension.
+        /// </summary>
+        /// <param name="extension">The extension of the file to analyze.</param>
+        /// <returns>True if the file is a Zip archive; false otherwise.</returns>
+        private static bool IsZipFile(string extension)
+        {
+          return string.Equals(extension.TrimStart('.'), "zip", StringComparison.OrdinalIgnoreCase);
+        }
+
+        /// <summary>
+        /// Unzips a media archive file flattening the folder structure.
+        /// </summary>
+        /// <param name="imageGallery">Image gallery name.</param>
+        /// <param name="zipStream">The archive file stream.</param>
+        protected void UnzipMediaFileArchive(string imageGallery, Stream zipStream)
+        {
+          Argument.ThrowIfNullOrEmpty(imageGallery, "imageGallery");
+          Argument.ThrowIfNull(zipStream, "zipStream");
+
+          var fileInflater = new ZipInputStream(zipStream);
+          ZipEntry entry;
+
+          while ((entry = fileInflater.GetNextEntry()) != null)
+          {
+            if (!entry.IsDirectory && !string.IsNullOrEmpty(entry.Name))
+            {
+              // skip disallowed files
+              if (IsFileAllowed(entry.Name, false))
+              {
+                //string fullFileName = _storageProvider.Combine(targetFolder, entry.Name);
+                //_storageProvider.TrySaveStream(fullFileName, fileInflater);
+                AddImage(imageGallery, Path.GetFileName(entry.Name), fileInflater);                
+              }
+            }
+          }
         }
     }
 }

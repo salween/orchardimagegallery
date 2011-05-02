@@ -6,5 +6,7 @@ namespace Mello.ImageGallery.ViewModels {
         public string ImageGalleryName { get; set; }
 
         public IEnumerable<HttpPostedFileBase> ImageFiles { get; set; }
+
+        public IEnumerable<string> AllowedFiles { get; set; }
     }
 }

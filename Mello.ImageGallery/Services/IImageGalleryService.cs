@@ -6,6 +6,9 @@ using Orchard;
 namespace Mello.ImageGallery.Services {
     public interface IImageGalleryService : IDependency {
         IEnumerable<Models.ImageGallery> GetImageGalleries();
+
+        IEnumerable<string> AllowedFileFormats { get; }
+
         Models.ImageGallery GetImageGallery(string imageGalleryName);
 
         void CreateImageGallery(string imageGalleryName);
