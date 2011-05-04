@@ -7,8 +7,7 @@ namespace Mello.ImageGallery {
             builder.Add().DefineStyle("ImageGallery").SetUrl("image-gallery.css");
 
             builder.Add().DefineScript("jQueryMultiFile").SetDependencies("jquery").SetUrl("jquery.MultiFile.pack.js");
-            builder.Add().DefineScript("jQueryUISortable").SetDependencies("jquery").SetUrl("sortable-interaction-jquery-ui-1.8.10.custom.min.js");
-            builder.Add().DefineScript("jQueryJSON").SetDependencies("jquery").SetUrl("jquery.json-2.2.min.js");
+            builder.Add().DefineScript("jQueryUISortable").SetDependencies("jquery").SetUrl("sortable-interaction-jquery-ui-1.8.10.custom.min.js");            
         }
     }
 }

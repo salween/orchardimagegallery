@@ -39,17 +39,25 @@ namespace Mello.ImageGallery {
 
         public int UpdateFrom1() {
             SchemaBuilder.AlterTable("ImageGallerySettingsRecord", table => table
-              .AddColumn<bool>("KeepAspectRatio")
+                .AddColumn<bool>("KeepAspectRatio")
             );
 
             ContentDefinitionManager.AlterTypeDefinition("ImageGalleryWidget", cfg => cfg
-            .WithPart("ImageGalleryPart")
-            .WithPart("WidgetPart")
-            .WithPart("CommonPart")
+                .WithPart("ImageGalleryPart")
+                .WithPart("WidgetPart")
+                .WithPart("CommonPart")
 
-            .WithSetting("Stereotype", "Widget"));
+                .WithSetting("Stereotype", "Widget"));
 
             return 2;
+        }
+
+        public int UpdateFrom2() {
+            SchemaBuilder.AlterTable("ImageGalleryRecord", table => table
+                .AddColumn<bool>("DisplayImageGallery")
+            );
+
+            return 3;
         }
     }
 }
