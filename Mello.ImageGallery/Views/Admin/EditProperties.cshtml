@@ -1,4 +1,5 @@
 ﻿@model Mello.ImageGallery.ViewModels.ImageGalleryEditPropertiesViewModel
+@using Mello.ImageGallery.Extensions
 
 @{ Layout.Title = T("Image Gallery Properties").ToString(); }
 
@@ -19,7 +20,8 @@
         @Html.TextBoxFor(o => o.ImageGallery.ThumbnailHeight)
 
         <p>
-            @Html.CheckBoxFor(o => o.ImageGallery.KeepAspectRatio) @T("Keep original image aspect ratio")
+            @Html.CheckBoxFor(o => o.ImageGallery.KeepAspectRatio)
+            @Html.LabelFor(o => o.ImageGallery.KeepAspectRatio, T("Keep original image aspect ratio"), new { @class = "forcheckbox" })
         </p>
     </fieldset>
     

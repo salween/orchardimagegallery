@@ -50,8 +50,9 @@ namespace Mello.ImageGallery.Drivers {
                 return null;
             }
 
-            if (string.IsNullOrWhiteSpace(part.ImageGalleryName))
+            if (!part.DisplayImageGallery || string.IsNullOrWhiteSpace(part.ImageGalleryName)){
                 return null;
+            }
 
             RegisterStaticContent(pluginFactory.PluginResourceDescriptor);
 
@@ -69,10 +70,10 @@ namespace Mello.ImageGallery.Drivers {
         protected override DriverResult Editor(ImageGalleryPart part, dynamic shapeHelper) {
             part.AvailableGalleries = _imageGalleryService.GetImageGalleries()
                 .OrderBy(o => o.Name).Select(o => new SelectListItem
-                                                  {
+                                                    {
                                                       Text = o.Name,
                                                       Value = o.Name
-                                                  });
+                                                    });
 
             if (!string.IsNullOrWhiteSpace(part.ImageGalleryName)) {
                 part.SelectedGallery = part.ImageGalleryName;
