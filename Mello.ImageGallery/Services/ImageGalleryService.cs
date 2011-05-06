@@ -5,10 +5,13 @@ using System.Linq;
 using System.Web;
 using ICSharpCode.SharpZipLib.Zip;
 using Mello.ImageGallery.Models;
+using Orchard;
 using Orchard.Data;
+using Orchard.Localization;
 using Orchard.Media.Models;
 using Orchard.Media.Services;
 using Orchard.Validation;
+using Orchard.UI.Notify;
 
 namespace Mello.ImageGallery.Services {
     public class ImageGalleryService : IImageGalleryService {
@@ -25,7 +28,8 @@ namespace Mello.ImageGallery.Services {
         //TODO: Remove Image repository as soon as it can cascade the saving
         public ImageGalleryService(IMediaService mediaService, IRepository<ImageGallerySettingsRecord> repository,
                                    IRepository<ImageGalleryImageSettingsRecord> imageRepository, IThumbnailService thumbnailService,
-                                   IRepository<ImageGalleryRecord> imageGalleryPartRepository) {
+                                   IRepository<ImageGalleryRecord> imageGalleryPartRepository, IOrchardServices services) {
+            _services = services;
             _imageGalleryPartRepository = imageGalleryPartRepository;
             _repository = repository;
             _mediaService = mediaService;
@@ -39,6 +43,7 @@ namespace Mello.ImageGallery.Services {
 
       private readonly IList<string> _imageFileFormats = new[] { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
       private readonly IList<string> _fileFormats = new[] { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF", "ZIP" };
+      private readonly IOrchardServices _services;
 
       public IEnumerable<string> AllowedFileFormats
       {
@@ -335,7 +340,7 @@ namespace Mello.ImageGallery.Services {
         /// <returns>True if the file is a Zip archive; false otherwise.</returns>
         private static bool IsZipFile(string extension)
         {
-          return string.Equals(extension.TrimStart('.'), "zip", StringComparison.OrdinalIgnoreCase);
+            return string.Equals(extension.TrimStart('.'), "zip", StringComparison.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -345,25 +350,38 @@ namespace Mello.ImageGallery.Services {
         /// <param name="zipStream">The archive file stream.</param>
         protected void UnzipMediaFileArchive(string imageGallery, Stream zipStream)
         {
-          Argument.ThrowIfNullOrEmpty(imageGallery, "imageGallery");
-          Argument.ThrowIfNull(zipStream, "zipStream");
+            Argument.ThrowIfNullOrEmpty(imageGallery, "imageGallery");
+            Argument.ThrowIfNull(zipStream, "zipStream");
 
-          var fileInflater = new ZipInputStream(zipStream);
-          ZipEntry entry;
+            var fileInflater = new ZipInputStream(zipStream);
+            ZipEntry entry;
 
-          while ((entry = fileInflater.GetNextEntry()) != null)
-          {
-            if (!entry.IsDirectory && !string.IsNullOrEmpty(entry.Name))
+            while ((entry = fileInflater.GetNextEntry()) != null)
             {
-              // skip disallowed files
-              if (IsFileAllowed(entry.Name, false))
-              {
-                //string fullFileName = _storageProvider.Combine(targetFolder, entry.Name);
-                //_storageProvider.TrySaveStream(fullFileName, fileInflater);
-                AddImage(imageGallery, Path.GetFileName(entry.Name), fileInflater);                
-              }
+                if (!entry.IsDirectory && !string.IsNullOrEmpty(entry.Name))
+                {
+                    // skip disallowed files
+                    if (IsFileAllowed(entry.Name, false))
+                    {
+                        string fileName = Path.GetFileName(entry.Name);
+
+                        try
+                        {
+                            AddImage(imageGallery, fileName, fileInflater);
+                        }
+                        catch(ArgumentException argumentException)
+                        {
+                            //if (argumentException.ParamName == entry.Name) {
+                            if(argumentException.Message.Contains(fileName)) {
+                                _services.Notifier.Warning(new LocalizedString(string.Format("File \"{0}\" skipped since it already exists.", fileName)));
+                            }
+                            else {
+                                throw;
+                            }
+                        }
+                    }
+                }
             }
-          }
         }
     }
 }
