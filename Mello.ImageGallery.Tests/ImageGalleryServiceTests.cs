@@ -6,6 +6,7 @@ using Mello.ImageGallery.Models;
 using Mello.ImageGallery.Services;
 using Moq;
 using NUnit.Framework;
+using Orchard;
 using Orchard.Data;
 using Orchard.Media.Services;
 using Orchard.Media.Models;
@@ -33,6 +34,8 @@ namespace Mello.ImageGallery.Tests {
                     (TestUtils.GetImageGallerySettingsRecord()));
             IRepository<ImageGalleryRecord> partRepository = new Mock<IRepository<ImageGalleryRecord>>().Object;
 
+            IOrchardServices orchardServices = new Mock<IOrchardServices>().Object;
+
             var builder = new ContainerBuilder();
             builder.RegisterType<ImageGalleryService>().As<IImageGalleryService>();
             builder.RegisterInstance(_mediaServiceMock.Object).As<IMediaService>();
@@ -40,6 +43,7 @@ namespace Mello.ImageGallery.Tests {
             builder.RegisterInstance(_imageRepositoryMock.Object).As<IRepository<ImageGalleryImageSettingsRecord>>();
             builder.RegisterInstance(_thumbnailServiceMock.Object).As<IThumbnailService>();
             builder.RegisterInstance(partRepository).As<IRepository<ImageGalleryRecord>>();
+            builder.RegisterInstance(orchardServices).As<IOrchardServices>();            
 
             _container = builder.Build();
 
