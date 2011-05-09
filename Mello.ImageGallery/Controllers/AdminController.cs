@@ -69,8 +69,7 @@ namespace Mello.ImageGallery.Controllers {
             return View(new ImageGalleryImagesViewModel
                         {
                             ImageGalleryName = imageGallery.Name,
-                            Images = imageGallery.Images,
-                            GripIconPublicUrl = _imageGalleryService.GetPublicUrl("Content/grip.png")
+                            Images = imageGallery.Images
                         });
         }
 
