@@ -7,6 +7,7 @@ using ICSharpCode.SharpZipLib.Zip;
 using Mello.ImageGallery.Models;
 using Orchard;
 using Orchard.Data;
+using Orchard.FileSystems.Media;
 using Orchard.Localization;
 using Orchard.Media.Models;
 using Orchard.Media.Services;
@@ -24,11 +25,19 @@ namespace Mello.ImageGallery.Services {
         private readonly IRepository<ImageGallerySettingsRecord> _repository;
         private readonly IRepository<ImageGalleryImageSettingsRecord> _imageRepository;
         private readonly IRepository<ImageGalleryRecord> _imageGalleryPartRepository;
+        private readonly IOrchardServices _services;
+        private readonly IStorageProvider _storageProvider;
+
+        private readonly IList<string> _imageFileFormats = new[] { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
+        private readonly IList<string> _fileFormats = new[] { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF", "ZIP" }; 
 
         //TODO: Remove Image repository as soon as it can cascade the saving
         public ImageGalleryService(IMediaService mediaService, IRepository<ImageGallerySettingsRecord> repository,
                                    IRepository<ImageGalleryImageSettingsRecord> imageRepository, IThumbnailService thumbnailService,
-                                   IRepository<ImageGalleryRecord> imageGalleryPartRepository, IOrchardServices services) {
+                                   IRepository<ImageGalleryRecord> imageGalleryPartRepository, IOrchardServices services,
+                                   IStorageProvider storageProvider)
+        {
+            _storageProvider = storageProvider;
             _services = services;
             _imageGalleryPartRepository = imageGalleryPartRepository;
             _repository = repository;
@@ -39,11 +48,7 @@ namespace Mello.ImageGallery.Services {
             if (!_mediaService.GetMediaFolders(string.Empty).Any(o => o.Name == ImageGalleriesMediaFolder)) {
                 _mediaService.CreateFolder(string.Empty, ImageGalleriesMediaFolder);
             }
-        }
-
-      private readonly IList<string> _imageFileFormats = new[] { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF" };
-      private readonly IList<string> _fileFormats = new[] { "BMP", "GIF", "EXIF", "JPG", "PNG", "TIFF", "ZIP" };
-      private readonly IOrchardServices _services;
+        }           
 
       public IEnumerable<string> AllowedFileFormats
       {
@@ -119,7 +124,7 @@ namespace Mello.ImageGallery.Services {
         }
 
         public Models.ImageGallery GetImageGallery(string imageGalleryName) {
-            if (imageGalleryName.Contains("\\"))
+            if (imageGalleryName.Contains("\\") || imageGalleryName.Contains("/"))
                 imageGalleryName = GetName(imageGalleryName);
 
             var mediaFolder = _mediaService.GetMediaFolders(ImageGalleriesMediaFolder).SingleOrDefault(m => m.Name == imageGalleryName);
@@ -179,13 +184,13 @@ namespace Mello.ImageGallery.Services {
         }
 
         private ImageGallerySettingsRecord GetImageGallerySettings(string imageGalleryName) {
-            if (imageGalleryName.Contains("\\"))
+            if (imageGalleryName.Contains("\\") || imageGalleryName.Contains("/"))
                 imageGalleryName = GetName(imageGalleryName);
             return _repository.Get(o => o.ImageGalleryName == imageGalleryName);
         }
 
         private ImageGalleryImageSettingsRecord GetImageSettings(ImageGallerySettingsRecord imageGallerySettings, string imageName) {
-            if (imageGallerySettings == null)
+            if (imageGallerySettings == null || imageGallerySettings.ImageSettings == null)
                 return null;
             return imageGallerySettings.ImageSettings.SingleOrDefault(o => o.Name == imageName);
         }
@@ -242,7 +247,7 @@ namespace Mello.ImageGallery.Services {
             Thumbnail thumbnail = null;
 
             if (isValidThumbnailSize) {
-                thumbnail = _thumbnailService.GetThumbnail(mediaFile.FolderName + "\\" + mediaFile.Name,
+                thumbnail = _thumbnailService.GetThumbnail( _storageProvider.Combine(mediaFile.FolderName, mediaFile.Name),
                                                               imageGallerySettings.ThumbnailWidth,
                                                               imageGallerySettings.ThumbnailHeight,
                                                               imageGallerySettings.KeepAspectRatio);
@@ -263,15 +268,11 @@ namespace Mello.ImageGallery.Services {
         }
 
         private string GetMediaPath(string imageGalleryName) {
-            return string.Concat(ImageGalleriesMediaFolder, "\\", imageGalleryName);
-        }
-
-        private string GetMediaPath(string imageGalleryName, string imageName) {
-            return string.Concat(ImageGalleriesMediaFolder, "\\", imageGalleryName, "\\", imageName);
+            return _storageProvider.Combine(ImageGalleriesMediaFolder, imageGalleryName);
         }
 
         private string GetName(string mediaPath) {
-            return mediaPath.Split('\\').Last();
+            return mediaPath.Split(new[] { '\\', '/' }).Last();
         }
 
         public void DeleteImage(string imageGalleryName, string imageName) {

@@ -20,18 +20,13 @@ namespace Mello.ImageGallery.Services {
             _mediaService = mediaService;
         }
 
-        private string GetMediaName(string fullName) {
-            return fullName.Split('/').LastOrDefault();
-        }
-
         protected string GetThumbnailFolder(string mediaPath) {
             // Creates a thumbnail folder if doesn't exists
             if (!_mediaService.GetMediaFolders(mediaPath).Select(o => o.Name).Contains(ThumbnailFolder)) {
                 _mediaService.CreateFolder(mediaPath, ThumbnailFolder);
             }
 
-            //return string.Concat(mediaPath, "/", ThumbnailFolder);
-            return Path.Combine(mediaPath, ThumbnailFolder);
+            return _storageProvider.Combine(mediaPath, ThumbnailFolder);
         }
 
         /// <summary>
@@ -54,7 +49,7 @@ namespace Mello.ImageGallery.Services {
                 throw new ArgumentException("Thumbnail height must be greater than zero", "thumbnailHeight");
             }
 
-            string thumbnailFilePath = string.Concat(thumbnailFolderPath, "/", imageName);
+            string thumbnailFilePath = _storageProvider.Combine(thumbnailFolderPath, imageName);
 
             IStorageFile imageFile = _storageProvider.GetFile(image);
             using (Stream imageStream = imageFile.OpenRead()) {
@@ -62,7 +57,7 @@ namespace Mello.ImageGallery.Services {
                 {
                     bool shouldCreateImage = true;
 
-                    // Verify if the image already have a Thumbnail
+                    // Verify if the image already have a Thumbnail                    
                     var thumbnailName = _mediaService.GetMediaFiles(thumbnailFolderPath)
                                         .Select(o => o.Name).SingleOrDefault(o => o == imageName);
 
@@ -97,9 +92,9 @@ namespace Mello.ImageGallery.Services {
                         }
                     }
                 }
-            }   
+            }
 
-            string thumbnailPublicUrl = string.Concat(_mediaService.GetPublicUrl(thumbnailFolderPath), "/", imageName);
+            string thumbnailPublicUrl = _mediaService.GetPublicUrl(thumbnailFilePath);
             return new Thumbnail {PublicUrl = thumbnailPublicUrl, Width = thumbnailWidth, Height = thumbnailHeight};
         }
 
