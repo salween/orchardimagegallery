@@ -8,6 +8,7 @@ using Moq;
 using NUnit.Framework;
 using Orchard;
 using Orchard.Data;
+using Orchard.FileSystems.Media;
 using Orchard.Media.Services;
 using Orchard.Media.Models;
 using System.Linq.Expressions;
@@ -32,9 +33,14 @@ namespace Mello.ImageGallery.Tests {
             _repositoryMock.Setup(
                 repository => repository.Get(It.IsAny<Expression<Func<ImageGallerySettingsRecord, bool>>>())).Returns(
                     (TestUtils.GetImageGallerySettingsRecord()));
+
             IRepository<ImageGalleryRecord> partRepository = new Mock<IRepository<ImageGalleryRecord>>().Object;
 
             IOrchardServices orchardServices = new Mock<IOrchardServices>().Object;
+
+            Mock<IStorageProvider> storageProviderMock = new Mock<IStorageProvider>();
+            
+            storageProviderMock.Setup(o => o.Combine(It.IsAny<string>(), It.IsAny<string>())).Returns((string one, string other) => System.IO.Path.Combine(one, other));
 
             var builder = new ContainerBuilder();
             builder.RegisterType<ImageGalleryService>().As<IImageGalleryService>();
@@ -43,7 +49,8 @@ namespace Mello.ImageGallery.Tests {
             builder.RegisterInstance(_imageRepositoryMock.Object).As<IRepository<ImageGalleryImageSettingsRecord>>();
             builder.RegisterInstance(_thumbnailServiceMock.Object).As<IThumbnailService>();
             builder.RegisterInstance(partRepository).As<IRepository<ImageGalleryRecord>>();
-            builder.RegisterInstance(orchardServices).As<IOrchardServices>();            
+            builder.RegisterInstance(orchardServices).As<IOrchardServices>();
+            builder.RegisterInstance(storageProviderMock.Object).As<IStorageProvider>(); 
 
             _container = builder.Build();
 
