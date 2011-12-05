@@ -19,7 +19,7 @@
         @foreach (var image in Model.Images)
         {
         <li>
-            <a href="@image.PublicUrl" title="@image.Title" @Html.ImageGalleryAdditionalAttributes(Model.ImageGalleryPlugin)>
+            <a href="@image.PublicUrl" title="@image.Title" @Html.ImageGalleryAdditionalAttributes(Model.ImageGalleryPlugin, Model.ImageGalleryName)>
                 @Html.Image(image)
             </a>            
         </li>

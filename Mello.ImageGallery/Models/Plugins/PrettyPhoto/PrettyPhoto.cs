@@ -11,8 +11,8 @@
         }
 
 
-        public override string AdditionalHrefMarkup {
-            get { return "rel='prettyPhoto[gallery]'"; }
+        public override string AdditionalHrefMarkup(string imageGalleryName) {
+          return string.Format("rel='prettyPhoto[{0}]'", imageGalleryName); 
         }
     }
 }

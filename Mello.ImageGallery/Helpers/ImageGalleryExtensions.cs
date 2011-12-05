@@ -11,8 +11,8 @@ namespace Mello.ImageGallery.Helpers {
             return MvcHtmlString.Create(imageGalleryPlugin.ToString(cssSelector));
         }
 
-        public static MvcHtmlString ImageGalleryAdditionalAttributes(this HtmlHelper helper, ImageGalleryPlugin imageGalleryPlugin) {
-            return MvcHtmlString.Create(imageGalleryPlugin.AdditionalHrefMarkup);
+        public static MvcHtmlString ImageGalleryAdditionalAttributes(this HtmlHelper helper, ImageGalleryPlugin imageGalleryPlugin, string imageGalleryName) {
+            return MvcHtmlString.Create(imageGalleryPlugin.AdditionalHrefMarkup(imageGalleryName));
         }
 
         public static HtmlString Image(this HtmlHelper helper, ImageGalleryImage image) {
