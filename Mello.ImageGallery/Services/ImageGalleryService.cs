@@ -339,8 +339,7 @@ namespace Mello.ImageGallery.Services {
         /// </summary>
         /// <param name="extension">The extension of the file to analyze.</param>
         /// <returns>True if the file is a Zip archive; false otherwise.</returns>
-        private static bool IsZipFile(string extension)
-        {
+        private static bool IsZipFile(string extension) {
             return string.Equals(extension.TrimStart('.'), "zip", StringComparison.OrdinalIgnoreCase);
         }
 
@@ -349,35 +348,31 @@ namespace Mello.ImageGallery.Services {
         /// </summary>
         /// <param name="imageGallery">Image gallery name.</param>
         /// <param name="zipStream">The archive file stream.</param>
-        protected void UnzipMediaFileArchive(string imageGallery, Stream zipStream)
-        {
+        protected void UnzipMediaFileArchive(string imageGallery, Stream zipStream) {
             Argument.ThrowIfNullOrEmpty(imageGallery, "imageGallery");
             Argument.ThrowIfNull(zipStream, "zipStream");
 
-            var fileInflater = new ZipInputStream(zipStream);
-            ZipEntry entry;
+            using (ZipInputStream fileInflater = new ZipInputStream(zipStream)) {
+                ZipEntry entry;
 
-            while ((entry = fileInflater.GetNextEntry()) != null)
-            {
-                if (!entry.IsDirectory && !string.IsNullOrEmpty(entry.Name))
-                {
-                    // skip disallowed files
-                    if (IsFileAllowed(entry.Name, false))
-                    {
-                        string fileName = Path.GetFileName(entry.Name);
+                while ((entry = fileInflater.GetNextEntry()) != null) {
+                    if (!entry.IsDirectory && !string.IsNullOrEmpty(entry.Name)) {
+                        // Handle Mac OS X meta files
+                        if (entry.Name.StartsWith("__MACOSX", StringComparison.OrdinalIgnoreCase)) continue;
+                        // Skip disallowed files
+                        if (IsFileAllowed(entry.Name, false)) {
+                            string fileName = Path.GetFileName(entry.Name);
 
-                        try
-                        {
-                            AddImage(imageGallery, fileName, fileInflater);
-                        }
-                        catch(ArgumentException argumentException)
-                        {
-                            //if (argumentException.ParamName == entry.Name) {
-                            if(argumentException.Message.Contains(fileName)) {
-                                _services.Notifier.Warning(new LocalizedString(string.Format("File \"{0}\" skipped since it already exists.", fileName)));
+                            try {
+                                AddImage(imageGallery, fileName, fileInflater);
                             }
-                            else {
-                                throw;
+                            catch (ArgumentException argumentException) {
+                                if (argumentException.Message.Contains(fileName)) {
+                                    _services.Notifier.Warning(new LocalizedString(string.Format("File \"{0}\" skipped since it already exists.", fileName)));
+                                }
+                                else {
+                                    throw;
+                                }
                             }
                         }
                     }
