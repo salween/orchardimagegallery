@@ -11,5 +11,7 @@ namespace Mello.ImageGallery.ViewModels {
         public int ThumbnailWidth { get; set; }
 
         public int ThumbnailHeight { get; set; }
+
+      public string ImageGalleryName { get; set; }
     }
 }

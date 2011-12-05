@@ -57,6 +57,7 @@ namespace Mello.ImageGallery.Drivers {
             RegisterStaticContent(pluginFactory.PluginResourceDescriptor);
 
             ImageGalleryViewModel viewModel = new ImageGalleryViewModel {ImageGalleryPlugin = pluginFactory.Plugin};
+            viewModel.ImageGalleryName = imageGallery.Name;
             viewModel.Images = imageGallery.Images;           
 
             return ContentShape("Parts_ImageGallery",
