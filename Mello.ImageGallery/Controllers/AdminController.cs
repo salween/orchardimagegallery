@@ -121,7 +121,7 @@ namespace Mello.ImageGallery.Controllers {
                 return new HttpUnauthorizedResult();
             }
 
-            return View(new ImageAddViewModel { AllowedFiles = _imageGalleryService.AllowedFileFormats });
+            return View(new ImageAddViewModel { AllowedFiles = _imageGalleryService.AllowedFileFormats, ImageGalleryName = imageGalleryName});
         }
 
         [HttpPost]

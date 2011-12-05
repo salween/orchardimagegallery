@@ -137,6 +137,7 @@ namespace Mello.ImageGallery.Tests {
             result.AssertViewRendered().ForView("").WithViewData<ImageAddViewModel>();
             ImageAddViewModel model = ((ViewResult) result).Model as ImageAddViewModel;
             Assert.IsNotNull(model);
+            Assert.AreEqual("gallery", model.ImageGalleryName);
         }
 
         [Test]
