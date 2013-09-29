@@ -13,8 +13,10 @@ namespace Mello.ImageGallery {
                     .Column("SelectedPlugin", DbType.Byte)
                 );
 
-            ContentDefinitionManager.AlterPartDefinition(
-                typeof (ImageGalleryPart).Name, cfg => cfg.Attachable());
+	        ContentDefinitionManager.AlterPartDefinition(
+		        typeof (ImageGalleryPart).Name, cfg => cfg.Attachable()
+		                                                  .WithDescription(
+			                                                  "Adds image gallery"));
 
 
             SchemaBuilder.CreateTable("ImageGallerySettingsRecord", table => table
