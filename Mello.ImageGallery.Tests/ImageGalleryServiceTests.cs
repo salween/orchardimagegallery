@@ -1,24 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+
 using Autofac;
+
 using Mello.ImageGallery.Models;
 using Mello.ImageGallery.Services;
+
 using Moq;
+
 using NUnit.Framework;
+
 using Orchard;
 using Orchard.Data;
 using Orchard.FileSystems.Media;
-using Orchard.Media.Services;
-using Orchard.Media.Models;
-using System.Linq.Expressions;
+using Orchard.MediaLibrary.Models;
+using Orchard.MediaLibrary.Services;
+
 
 namespace Mello.ImageGallery.Tests {
     [TestFixture]
     public class ImageGalleryServiceTests {
         private IContainer _container;
         private IImageGalleryService _imageGalleryService;
-        private Mock<IMediaService> _mediaServiceMock;
+        private Mock<IMediaLibraryService> _mediaServiceMock;
         private Mock<IRepository<ImageGallerySettingsRecord>> _repositoryMock;
         private Mock<IRepository<ImageGalleryImageSettingsRecord>> _imageRepositoryMock;
         private Mock<IThumbnailService> _thumbnailServiceMock;
@@ -26,7 +32,7 @@ namespace Mello.ImageGallery.Tests {
 
         [SetUp]
         public void Init() {
-            _mediaServiceMock = new Mock<IMediaService>();
+			_mediaServiceMock = new Mock<IMediaLibraryService>();
             _repositoryMock = new Mock<IRepository<ImageGallerySettingsRecord>>();
             _imageRepositoryMock = new Mock<IRepository<ImageGalleryImageSettingsRecord>>();
             _thumbnailServiceMock = new Mock<IThumbnailService>();
@@ -44,7 +50,7 @@ namespace Mello.ImageGallery.Tests {
 
             var builder = new ContainerBuilder();
             builder.RegisterType<ImageGalleryService>().As<IImageGalleryService>();
-            builder.RegisterInstance(_mediaServiceMock.Object).As<IMediaService>();
+			builder.RegisterInstance(_mediaServiceMock.Object).As<IMediaLibraryService>();
             builder.RegisterInstance(_repositoryMock.Object).As<IRepository<ImageGallerySettingsRecord>>();
             builder.RegisterInstance(_imageRepositoryMock.Object).As<IRepository<ImageGalleryImageSettingsRecord>>();
             builder.RegisterInstance(_thumbnailServiceMock.Object).As<IThumbnailService>();
@@ -197,10 +203,10 @@ namespace Mello.ImageGallery.Tests {
             fileMock.Setup(o => o.FileName).Returns("file.png");
 
             _mediaServiceMock.Setup(
-                mediaService => mediaService.UploadMediaFile(ImageGalleryFolderName + "\\gallery", "file.png", fileMock.Object.InputStream, false)).
+                mediaService => mediaService.UploadMediaFile(ImageGalleryFolderName + "\\gallery", "file.png", fileMock.Object.InputStream)).
                 Verifiable();
 
-            _mediaServiceMock.Setup(o => o.FileAllowed("file.png", true)).Returns(true);
+            //_mediaServiceMock.Setup(o => o.FileAllowed("file.png", true)).Returns(true);
 
             // Act
             _imageGalleryService.AddImage("gallery", fileMock.Object);
@@ -217,7 +223,7 @@ namespace Mello.ImageGallery.Tests {
           Mock<System.Web.HttpPostedFileBase> fileMock = new Mock<System.Web.HttpPostedFileBase>();
           fileMock.Setup(o => o.FileName).Returns("file.exe");
 
-          _mediaServiceMock.Setup(o => o.FileAllowed("file.png", true)).Returns(false);
+          //_mediaServiceMock.Setup(o => o.FileAllowed("file.png", true)).Returns(false);
 
           // Act
           _imageGalleryService.AddImage("gallery", fileMock.Object);
@@ -278,10 +284,10 @@ namespace Mello.ImageGallery.Tests {
         [Test]
         public void Can_Get_Public_Url() {
             // Arrange
-            _mediaServiceMock.Setup(mediaService => mediaService.GetPublicUrl("any")).Returns("ok").Verifiable();
+			_mediaServiceMock.Setup(mediaService => mediaService.GetMediaPublicUrl("C:\\temp", "any.txt")).Returns("ok").Verifiable();
 
             // Act
-            string result = _imageGalleryService.GetPublicUrl("any");
+            string result = _imageGalleryService.GetPublicUrl("C:\\temp\\any.txt");
 
             // Assert
             _mediaServiceMock.Verify();

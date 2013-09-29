@@ -32,7 +32,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Autofac">
-      <HintPath>lib\autofac\Autofac.dll</HintPath>
+      <HintPath>..\Mello.ImageGallery\lib\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="Moq">
       <HintPath>lib\Moq.dll</HintPath>
@@ -44,25 +44,22 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>lib\nunit.framework.dll</HintPath>
     </Reference>
-    <Reference Include="Orchard.Core, Version=1.0.20.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Mello.ImageGallery\bin\Orchard.Core.dll</HintPath>
+    <Reference Include="Orchard.Core">
+      <HintPath>..\Mello.ImageGallery\lib\Orchard.Core.dll</HintPath>
     </Reference>
-    <Reference Include="Orchard.Framework, Version=1.0.20.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Mello.ImageGallery\bin\Orchard.Framework.dll</HintPath>
+    <Reference Include="Orchard.Framework">
+      <HintPath>..\Mello.ImageGallery\lib\Orchard.Framework.dll</HintPath>
     </Reference>
-    <Reference Include="Orchard.Media, Version=1.0.20.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Mello.ImageGallery\bin\Orchard.Media.dll</HintPath>
+    <Reference Include="Orchard.MediaLibrary">
+      <HintPath>..\Mello.ImageGallery\lib\Orchard.MediaLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Web" />
-    <Reference Include="System.Web.Mvc, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Mvc, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>lib\System.Web.Mvc.dll</HintPath>
+      <HintPath>..\Mello.ImageGallery\lib\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -81,6 +78,9 @@
       <Project>{EACC1A53-532B-486B-BC51-BA65ACBA2B61}</Project>
       <Name>ImageGallery</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
