@@ -3,19 +3,24 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+
 using Orchard.FileSystems.Media;
-using Orchard.Media.Services;
+
 using Mello.ImageGallery.Models;
+
+using Orchard.MediaLibrary.Services;
+
 
 namespace Mello.ImageGallery.Services {
     public class ThumbnailService : IThumbnailService {
         private const string ThumbnailFolder = "Thumbnails";
 
         private readonly ImageFormat _thumbnailImageFormat = ImageFormat.Jpeg;
-        private readonly IMediaService _mediaService;
+        private readonly IMediaLibraryService _mediaService;
         private readonly IStorageProvider _storageProvider;
 
-        public ThumbnailService(IMediaService mediaService, IStorageProvider storageProvider) {
+        public ThumbnailService(IMediaLibraryService mediaService, IStorageProvider storageProvider)
+        {
             _storageProvider = storageProvider;
             _mediaService = mediaService;
         }
@@ -94,7 +99,7 @@ namespace Mello.ImageGallery.Services {
                 }
             }
 
-            string thumbnailPublicUrl = _mediaService.GetPublicUrl(thumbnailFilePath);
+            string thumbnailPublicUrl = _mediaService.GetMediaPublicUrl(Path.GetDirectoryName(thumbnailFilePath), Path.GetFileName(thumbnailFilePath));
             return new Thumbnail {PublicUrl = thumbnailPublicUrl, Width = thumbnailWidth, Height = thumbnailHeight};
         }
 
