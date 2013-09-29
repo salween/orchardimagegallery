@@ -167,6 +167,7 @@
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Drivers\ImageGalleryDriver.cs" />
     <Compile Include="Extensions\LabelForExtensions.cs" />
+    <Compile Include="Extensions\LongExtensions.cs" />
     <Compile Include="Handlers\ImageGalleryHandler.cs" />
     <Compile Include="Helpers\ImageExtensions.cs" />
     <Compile Include="Helpers\ImageGalleryExtensions.cs" />

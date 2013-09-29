@@ -1,5 +1,6 @@
 ﻿@model Mello.ImageGallery.ViewModels.ImageEditViewModel
-@using Orchard.Media.Extensions           
+@using Mello.ImageGallery.Extensions           
+
 @{ Style.Require("ImageGalleryAdmin"); }
            
 @{ Layout.Title = T("Edit Image - {0}", Model.Image.Name).ToString(); }
@@ -14,7 +15,7 @@
         <div>
         @* <label>@T("Dimensions: <span>500 x 375 pixels</span>")</label> *@
 
-        <label>@T("Size: <span>{0}</span>", Model.Image.Size.ToFriendlySizeString())</label>
+        <label>@T("Size: <span>{0}</span>", Model.Image.Size)</label>
                
         <label>@T("Added on <span>{0}</span>", Model.Image.LastUpdated)</label>
         </div>
