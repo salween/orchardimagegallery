@@ -10,7 +10,10 @@ namespace Mello.ImageGallery.Services {
         /// <param name="thumbnailWidth">The thumbnail width in pixels.</param>
         /// <param name="thumbnailHeight">The thumbnail height in pixels.</param>
         /// <param name="keepAspectRatio">Indicates whether to keep the original image aspect ratio.</param>
-        /// <returns>The thumbnail full path on the media storage.</returns>
-        Thumbnail GetThumbnail(string imageMediaPath, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio);
+        /// <param name="expandToFill">Indicates whether the thumbnail should be expanded to fill the entire thumbnail bounds.</param>
+        /// <returns>
+        /// The thumbnail full path on the media storage.
+        /// </returns>
+        Thumbnail GetThumbnail(string imageMediaPath, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio, bool expandToFill);
     }
 }

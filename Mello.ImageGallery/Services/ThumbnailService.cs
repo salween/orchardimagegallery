@@ -7,6 +7,7 @@ using System.Linq;
 using Orchard.FileSystems.Media;
 
 using Mello.ImageGallery.Models;
+using Mello.ImageGallery.Helpers;
 
 using Orchard.MediaLibrary.Services;
 
@@ -43,9 +44,10 @@ namespace Mello.ImageGallery.Services {
         /// <param name="thumbnailWidth">The thumbnail width in pixels.</param>
         /// <param name="thumbnailHeight">The thumbnail height in pixels.</param>
         /// <param name="keepAspectRatio">Indicates whether to keep the original image aspect ratio</param>
+        /// <param name="expandToFill">Indicates whether to expand the thumbnail to fill the bounds specified by width and height</param>
         /// <returns>The thumbnail file media path.</returns>
         protected Thumbnail CreateThumbnail(string image, string thumbnailFolderPath, string imageName, int thumbnailWidth,
-                                         int thumbnailHeight, bool keepAspectRatio) {
+                                         int thumbnailHeight, bool keepAspectRatio, bool expandToFill) {
             if (thumbnailWidth <= 0) {
                 throw new ArgumentException("Thumbnail width must be greater than zero", "thumbnailWidth");
             }
@@ -62,16 +64,16 @@ namespace Mello.ImageGallery.Services {
                 {
                     bool shouldCreateImage = true;
 
-                    // Verify if the image already have a Thumbnail                    
+                    // Verify if the image already has a Thumbnail                    
                     var thumbnailName = _mediaService.GetMediaFiles(thumbnailFolderPath)
                                         .Select(o => o.Name).SingleOrDefault(o => o == imageName);
 
                     if(thumbnailName != null) {
-                        // Verify if the existing thumbnail has the correct size
+                        // Verify if the existing thumbnail has the correct size (in case the thumbnail settings have been changed)
                         IStorageFile thumbnailFile = _storageProvider.GetFile(thumbnailFilePath);
                         using (Stream thumnailFileStream = thumbnailFile.OpenRead()) {
                             using (Image thumbnailImage = Image.FromStream(thumnailFileStream)) {
-                                if (ImageHasCorrectThumbnail(drawingImage, thumbnailImage, thumbnailWidth, thumbnailHeight, keepAspectRatio))
+                                if (ImageHasCorrectThumbnail(drawingImage, thumbnailImage, thumbnailWidth, thumbnailHeight, keepAspectRatio, expandToFill))
                                 {
                                     shouldCreateImage = false;
                                     thumbnailWidth = thumbnailImage.Width;
@@ -82,7 +84,7 @@ namespace Mello.ImageGallery.Services {
                     }
 
                     if (shouldCreateImage) {
-                        using (Image thumbDrawing = CreateThumbnail(drawingImage, thumbnailWidth, thumbnailHeight,keepAspectRatio)) {
+                        using (Image thumbDrawing = CreateThumbnail(drawingImage, thumbnailWidth, thumbnailHeight, keepAspectRatio, expandToFill)) {
                             if (_storageProvider.ListFiles(thumbnailFolderPath).Select(o => o.GetName()).Contains(imageName)) {
                                 _storageProvider.DeleteFile(thumbnailFilePath);
                             }
@@ -103,7 +105,7 @@ namespace Mello.ImageGallery.Services {
             return new Thumbnail {PublicUrl = thumbnailPublicUrl, Width = thumbnailWidth, Height = thumbnailHeight};
         }
 
-        protected Image CreateThumbnail(Image originalImage, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio) {
+        protected Image CreateThumbnail(Image originalImage, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio, bool expandToFill) {
             if (thumbnailWidth <= 0) {
                 throw new ArgumentException("Thumbnail width must be greater than zero", "thumbnailWidth");
             }
@@ -112,49 +114,75 @@ namespace Mello.ImageGallery.Services {
                 throw new ArgumentException("Thumbnail height must be greater than zero", "thumbnailHeight");
             }
 
-            int newWidth; int newHeight;
-            GetThumbnailSize(originalImage, thumbnailWidth, thumbnailHeight, keepAspectRatio, out newWidth, out newHeight);
+            Image thumbnailImage = null;
 
-            Bitmap newImage = new Bitmap(originalImage, newWidth, newHeight);
+            if (keepAspectRatio && expandToFill)
+            {
+                // Expand/Shrink the image to fill the thumbnail bounds maintaining aspect ratio
+                float aspectRatio = (float)originalImage.Width / (float)originalImage.Height;
+                int newWidth = thumbnailWidth;
+                int newHeight = Convert.ToInt32((float)newWidth / aspectRatio);
+                if (newHeight < thumbnailHeight)
+                {
+                    newHeight = thumbnailHeight;
+                    newWidth = Convert.ToInt32((float)newHeight * aspectRatio);
+                }
+                thumbnailImage = originalImage.HiqhQualityResize(newWidth, newHeight);
+                // Then clip to the thumbnail bounds
+                Point cropStartPoint = thumbnailImage.GetTopLeftStartCropPointForKeepCenter(thumbnailWidth, thumbnailHeight);
+                return thumbnailImage.Crop(thumbnailWidth, thumbnailHeight, cropStartPoint.X, cropStartPoint.Y);               
+            }
+            else
+            {
+                int newWidth; int newHeight;
+                GetThumbnailSize(originalImage, thumbnailWidth, thumbnailHeight, keepAspectRatio, expandToFill, out newWidth, out newHeight);                
+                thumbnailImage = originalImage.HiqhQualityResize(newWidth, newHeight);
+            }
 
-            Graphics g = Graphics.FromImage(newImage);
-            g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality; 
-            g.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
-            g.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
-            g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear;
-
-            g.DrawImage(originalImage, 0, 0, newImage.Width, newImage.Height);
-
-            return newImage;
+            return thumbnailImage;
         }
 
-        protected void GetThumbnailSize(Image originalImage, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio, out int newWidth, out int newHeight)
+        protected void GetThumbnailSize(Image originalImage, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio, bool expandToFill, out int newWidth, out int newHeight)
         {
-            newWidth = thumbnailWidth;
-            newHeight = thumbnailHeight;
-
-            if (keepAspectRatio) {
-                if (originalImage.Width > originalImage.Height)
+            if (expandToFill)
+            {
+                // Regardless of whether we're crop-filling (keeping aspect) or stretch filling, we're only interested in the new thumbnail size
+                newWidth = thumbnailWidth;
+                newHeight = thumbnailHeight;
+            }
+            else // Will shrink to fit, but won't expand to fit (in the case where the image is smaller than the thumbnail limits)
+            {                
+                if (keepAspectRatio)
                 {
-                    newWidth = thumbnailWidth;
-                    float widthPer = (float)thumbnailWidth / originalImage.Width;
-                    newHeight = Convert.ToInt32(originalImage.Height * widthPer);
+                    float aspectRatio = (float)originalImage.Width / (float)originalImage.Height;
+                    newWidth = originalImage.Width;
+                    newHeight = originalImage.Height;
+                    if (newWidth > thumbnailWidth)
+                    {
+                        newWidth = thumbnailWidth;
+                        newHeight = Convert.ToInt32((float)newWidth / aspectRatio);
+                    }
+                    if (newHeight > thumbnailHeight)
+                    {
+                        newHeight = thumbnailHeight;
+                        newWidth = Convert.ToInt32((float)newHeight * aspectRatio);
+                    }
                 }
                 else
                 {
-                    newHeight = thumbnailHeight;
-                    float heightPer = (float)thumbnailHeight / originalImage.Height;
-                    newWidth = Convert.ToInt32(originalImage.Width * heightPer);
+                    newWidth = Math.Min(originalImage.Width, thumbnailWidth);
+                    newHeight = Math.Min(originalImage.Height, thumbnailHeight);
                 }
             }
         }
 
-        private bool ImageHasCorrectThumbnail(Image originalImage, Image thumbnailImage, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio)
+        private bool ImageHasCorrectThumbnail(Image originalImage, Image thumbnailImage, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio, bool expandToFill)
         {
           if (thumbnailImage == null)
             return false;
           int newWidth; int newHeight;
-          GetThumbnailSize(originalImage, thumbnailWidth, thumbnailHeight, keepAspectRatio, out newWidth, out newHeight);
+
+          GetThumbnailSize(originalImage, thumbnailWidth, thumbnailHeight, keepAspectRatio, expandToFill, out newWidth, out newHeight);
 
           return thumbnailImage.Width == newWidth && thumbnailImage.Height == newHeight;
         }
@@ -166,8 +194,12 @@ namespace Mello.ImageGallery.Services {
         /// <param name="thumbnailWidth">The thumbnail width in pixels.</param>
         /// <param name="thumbnailHeight">The thumbnail height in pixels.</param>
         /// <param name="keepAspectRatio">Indicates whether to keep the original image aspect ratio</param>
-        /// <returns>The thumbnail full path on the media storage.</returns>
-        public Thumbnail GetThumbnail(string image, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio) {
+        /// <param name="expandToFill">Indicates whether the thumbnail should be expanded to fill the entire thumbnail bounds.</param>
+        /// <returns>
+        /// The thumbnail full path on the media storage.
+        /// </returns>
+        /// <remarks>If keepAspectRatio and expandToFill are both true, the thumbnail will be clipped to fit the thumbnail bounds.</remarks>
+        public Thumbnail GetThumbnail(string image, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio, bool expandToFill) {
             if(image == null)  
               throw new ArgumentNullException("image");
 
@@ -175,7 +207,7 @@ namespace Mello.ImageGallery.Services {
             string mediaPath = image.Substring(0, image.Length - imageName.Length - 1);
             string thumbnailFolderPath = GetThumbnailFolder(mediaPath);
 
-            return CreateThumbnail(image, thumbnailFolderPath, imageName, thumbnailWidth, thumbnailHeight, keepAspectRatio);
-        }        
+            return CreateThumbnail(image, thumbnailFolderPath, imageName, thumbnailWidth, thumbnailHeight, keepAspectRatio, expandToFill);
+        }
     }
 }

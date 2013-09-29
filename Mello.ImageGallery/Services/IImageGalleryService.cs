@@ -14,7 +14,7 @@ namespace Mello.ImageGallery.Services {
         void CreateImageGallery(string imageGalleryName);
         void DeleteImageGallery(string imageGalleryName);
         void RenameImageGallery(string imageGalleryName, string newName);
-        void UpdateImageGalleryProperties(string name, int thumbnailHeight, int thumbnailWidth, bool keepAspectRatio);
+        void UpdateImageGalleryProperties(string name, int thumbnailHeight, int thumbnailWidth, bool keepAspectRatio, bool expandToFill);
 
         ImageGalleryImage GetImage(string galleryName, string imageName);
         void AddImage(string imageGalleryName, HttpPostedFileBase imageFile);
