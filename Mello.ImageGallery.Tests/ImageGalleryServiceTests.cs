@@ -115,7 +115,7 @@ namespace Mello.ImageGallery.Tests {
             _repositoryMock.Setup(o => o.Get(It.IsAny<Expression<Func<ImageGallerySettingsRecord, bool>>>()))
                 .Returns(new ImageGallerySettingsRecord{ThumbnailHeight = 100, ThumbnailWidth = 200, ImageSettings = imageSettingsRecords, KeepAspectRatio = true});
             
-            _thumbnailServiceMock.Setup(thumbnailService => thumbnailService.GetThumbnail("folder\\image", 200, 100, true)).Verifiable();
+            _thumbnailServiceMock.Setup(thumbnailService => thumbnailService.GetThumbnail("folder\\image", 200, 100, true, false)).Verifiable();
 
             // Act
             Models.ImageGallery imageGallery = _imageGalleryService.GetImageGallery("gallery");
@@ -170,7 +170,7 @@ namespace Mello.ImageGallery.Tests {
                 TestUtils.GetMediaFolders(5));
 
             // Act
-            _imageGalleryService.UpdateImageGalleryProperties("4", 200, 300, true);
+            _imageGalleryService.UpdateImageGalleryProperties("4", 200, 300, true, false);
 
             // Assert
             _mediaServiceMock.Verify();
@@ -189,7 +189,7 @@ namespace Mello.ImageGallery.Tests {
                 TestUtils.GetMediaFolders(5));
 
             // Act
-            _imageGalleryService.UpdateImageGalleryProperties("4", 200, 300, true);
+            _imageGalleryService.UpdateImageGalleryProperties("4", 200, 300, true, false);
 
             // Assert
             _mediaServiceMock.Verify();

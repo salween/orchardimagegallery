@@ -59,5 +59,11 @@ namespace Mello.ImageGallery {
 
             return 3;
         }
+
+        public int UpdateFrom3()
+        {
+            SchemaBuilder.AlterTable("ImageGallerySettingsRecord", table => table.AddColumn<bool>("ExpandToFill"));
+            return 4;
+        }
     }
 }

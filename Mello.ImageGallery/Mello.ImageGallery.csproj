@@ -168,6 +168,7 @@
     <Compile Include="Drivers\ImageGalleryDriver.cs" />
     <Compile Include="Extensions\LabelForExtensions.cs" />
     <Compile Include="Handlers\ImageGalleryHandler.cs" />
+    <Compile Include="Helpers\ImageExtensions.cs" />
     <Compile Include="Helpers\ImageGalleryExtensions.cs" />
     <Compile Include="Migrations.cs" />
     <Compile Include="Models\ImageGallery.cs" />

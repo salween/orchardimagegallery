@@ -12,6 +12,8 @@ namespace Mello.ImageGallery.Models {
 
         public virtual bool KeepAspectRatio { get; set; }
 
+        public virtual bool ExpandToFill { get; set; }
+
         public virtual IList<ImageGalleryImageSettingsRecord> ImageSettings { get; set; }
     }
 }

@@ -23,6 +23,11 @@
             @Html.CheckBoxFor(o => o.ImageGallery.KeepAspectRatio)
             @Html.LabelFor(o => o.ImageGallery.KeepAspectRatio, T("Keep original image aspect ratio"), new { @class = "forcheckbox" })
         </p>
+
+        <p>
+            @Html.CheckBoxFor(o => o.ImageGallery.ExpandToFill)
+            @Html.LabelFor(o => o.ImageGallery.ExpandToFill, T("Expand to fill max width and height (crops if aspect ratio is kept)"), new { @class = "forcheckbox" })
+        </p>
     </fieldset>
     
     <fieldset>        
