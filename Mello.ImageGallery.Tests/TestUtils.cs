@@ -1,7 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Web;
+
 using Mello.ImageGallery.Models;
-using Orchard.Media.Models;
+
+using Orchard.MediaLibrary.Models;
+
 
 namespace Mello.ImageGallery.Tests {
     public static class TestUtils {
