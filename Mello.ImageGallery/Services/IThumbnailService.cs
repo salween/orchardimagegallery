@@ -15,5 +15,11 @@ namespace Mello.ImageGallery.Services {
         /// The thumbnail full path on the media storage.
         /// </returns>
         Thumbnail GetThumbnail(string imageMediaPath, int thumbnailWidth, int thumbnailHeight, bool keepAspectRatio, bool expandToFill);
+
+        /// <summary>
+        /// Deletes the thumbnail.
+        /// </summary>
+        /// <param name="imageMediaPath">The image full path on the media storage.</param>
+        void DeleteThumbnail(string imageMediaPath);
     }
 }
