@@ -144,7 +144,6 @@
     <Content Include="Scripts\Admin\Images.js" />
     <Content Include="Scripts\Editor\ImageGallery.js" />
     <Content Include="Scripts\jquery.MultiFile.pack.js" />
-    <Content Include="Scripts\sortable-interaction-jquery-ui-1.8.10.custom.min.js" />
     <Content Include="Styles\image-gallery-admin.css" />
     <Content Include="Content\Plugins\LightBox\Styles\jquery.lightbox-0.5.css" />
     <None Include="Views\Admin\AddImages.cshtml" />

@@ -1,9 +1,10 @@
 ﻿@model Mello.ImageGallery.ViewModels.ImageGalleryImagesViewModel
 @using Mello.ImageGallery.Extensions
 
-@{ Style.Require("ImageGalleryAdmin"); }
-@{ Script.Require("jQueryUISortable"); }
-@{ Script.Include("Admin/Images.js"); }
+@{ Style.Require("ImageGalleryAdmin"); 
+   Script.Require("jQueryUI_Sortable");
+   Script.Include("Admin/Images.js");
+}
 
 
 @{ Layout.Title = T("Manage Image Gallery").ToString(); }
