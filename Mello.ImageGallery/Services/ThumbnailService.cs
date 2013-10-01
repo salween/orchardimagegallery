@@ -209,5 +209,22 @@ namespace Mello.ImageGallery.Services {
 
             return CreateThumbnail(image, thumbnailFolderPath, imageName, thumbnailWidth, thumbnailHeight, keepAspectRatio, expandToFill);
         }
+
+        /// <summary>
+        /// Deletes the thumbnail.
+        /// </summary>
+        /// <param name="image">The image.</param>
+        public void DeleteThumbnail(string image)
+        {
+            string imageName = Path.GetFileName(image);
+            string mediaPath = image.Substring(0, image.Length - imageName.Length - 1);
+            string thumbnailFolderPath = GetThumbnailFolder(mediaPath);
+            string thumbnailFilePath = _storageProvider.Combine(thumbnailFolderPath, imageName);
+
+            if (_storageProvider.ListFiles(thumbnailFolderPath).Select(o => o.GetName()).Contains(imageName))
+            {
+                _storageProvider.DeleteFile(thumbnailFilePath);
+            }
+        }
     }
 }
