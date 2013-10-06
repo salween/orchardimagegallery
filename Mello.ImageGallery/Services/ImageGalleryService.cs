@@ -52,7 +52,7 @@ namespace Mello.ImageGallery.Services
 			_imageRepository = imageRepository;
 			_thumbnailService = thumbnailService;
 
-			if (!_mediaService.GetMediaFolders(string.Empty).Any(o => o.Name == ImageGalleriesMediaFolder))
+			if (_mediaService.GetMediaFolders(string.Empty).All(o => o.Name != ImageGalleriesMediaFolder))
 			{
 				_mediaService.CreateFolder(string.Empty, ImageGalleriesMediaFolder);
 			}
@@ -111,20 +111,21 @@ namespace Mello.ImageGallery.Services
 		public void UpdateImageGalleryProperties(string imageGalleryName, int thumbnailHeight, int thumbnailWidth, bool keepAspectRatio, bool expandToFill)
 		{
 			var imageGallery = GetImageGallery(imageGalleryName);
-			var imageGallerySettings = GetImageGallerySettings(imageGallery.MediaPath);
 
-			if (imageGallerySettings == null)
-			{
-				CreateImageGallerySettings(imageGallery.MediaPath, thumbnailHeight, thumbnailWidth, keepAspectRatio, expandToFill);
-			}
-			else
-			{
-				imageGallerySettings.ThumbnailHeight = thumbnailHeight;
-				imageGallerySettings.ThumbnailWidth = thumbnailWidth;
-				imageGallerySettings.KeepAspectRatio = keepAspectRatio;
-				imageGallerySettings.ExpandToFill = expandToFill;
+			if (imageGallery != null) {
+				var imageGallerySettings = GetImageGallerySettings(imageGallery.MediaPath);
 
-				_repository.Update(imageGallerySettings);
+				if (imageGallerySettings == null) {
+					CreateImageGallerySettings(imageGallery.MediaPath, thumbnailHeight, thumbnailWidth, keepAspectRatio, expandToFill);
+				}
+				else {
+					imageGallerySettings.ThumbnailHeight = thumbnailHeight;
+					imageGallerySettings.ThumbnailWidth = thumbnailWidth;
+					imageGallerySettings.KeepAspectRatio = keepAspectRatio;
+					imageGallerySettings.ExpandToFill = expandToFill;
+
+					_repository.Update(imageGallerySettings);
+				}
 			}
 		}
 
@@ -338,7 +339,6 @@ namespace Mello.ImageGallery.Services
 		public bool IsFileAllowed(string fileName, bool allowZip) {
 			return (IsImageFile(fileName) || (allowZip &&
 			                                  IsZipFile(Path.GetExtension(fileName))));
-			//_mediaService.FileAllowed(fileName, allowZip);
 		}
 
 		public bool IsFileAllowed(HttpPostedFileBase postedFile)
@@ -376,8 +376,9 @@ namespace Mello.ImageGallery.Services
 		{
 			Models.ImageGallery imageGallery = GetImageGallery(imageGalleryName);
 			int position = 0;
+			var trimedImages = images.Select(x => x.Trim());
 
-			foreach (string image in images)
+			foreach (string image in trimedImages)
 			{
 				ImageGalleryImage imageGalleryImage = imageGallery.Images.Single(o => o.Name == image);
 				imageGalleryImage.Position = position++;

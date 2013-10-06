@@ -11,7 +11,7 @@ namespace Mello.ImageGallery.Models {
         /// Indicates if the image gallery should be displayed.
         /// </summary>
         public bool DisplayImageGallery {
-            get { return Record.DisplayImageGallery.HasValue ? Record.DisplayImageGallery.Value : true; }
+			get { return Record.DisplayImageGallery.GetValueOrDefault() && HasAvailableGalleries; }
             set { Record.DisplayImageGallery = value; }
         }
 
@@ -27,7 +27,7 @@ namespace Mello.ImageGallery.Models {
         /// Indicates if there is any image gallery available.
         /// </summary>
         public bool HasAvailableGalleries {
-            get { return AvailableGalleries != null && AvailableGalleries.Count() > 0; }
+            get { return AvailableGalleries != null && AvailableGalleries.Any(); }
         }
 
         /// <summary>
