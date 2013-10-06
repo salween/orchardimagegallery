@@ -1,6 +1,8 @@
 ﻿using Mello.ImageGallery.Models;
+
 using Orchard.ContentManagement.Handlers;
 using Orchard.Data;
+
 
 namespace Mello.ImageGallery.Handlers {
     public class ImageGalleryHandler : ContentHandler {

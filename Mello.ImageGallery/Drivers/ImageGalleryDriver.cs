@@ -42,17 +42,24 @@ namespace Mello.ImageGallery.Drivers {
         }
 
         protected override DriverResult Display(ImageGalleryPart part, string displayType, dynamic shapeHelper) {
-            PluginFactory pluginFactory = PluginFactory.GetFactory(part.SelectedPlugin);
-            Models.ImageGallery imageGallery = _imageGalleryService.GetImageGallery(part.ImageGalleryName);
+            if (displayType == "SummaryAdmin")
+			{
+				// Image gallery returns nothing if in Summary Admin
+				return null;
+			}
 
-            if (displayType == "SummaryAdmin") {
-                // Image gallery returns nothing if in Summary Admin
-                return null;
-            }
+			if (!part.DisplayImageGallery || string.IsNullOrWhiteSpace(part.ImageGalleryName))
+			{
+				return null;
+			}
+			
+			Models.ImageGallery imageGallery = _imageGalleryService.GetImageGallery(part.ImageGalleryName);
 
-            if (!part.DisplayImageGallery || string.IsNullOrWhiteSpace(part.ImageGalleryName)){
-                return null;
-            }
+			if (imageGallery == null) {
+				return null;
+			}
+
+			PluginFactory pluginFactory = PluginFactory.GetFactory(part.SelectedPlugin);
 
             RegisterStaticContent(pluginFactory.PluginResourceDescriptor);
 
@@ -101,8 +108,10 @@ namespace Mello.ImageGallery.Drivers {
 
         //POST
         protected override DriverResult Editor(ImageGalleryPart part, IUpdateModel updater, dynamic shapeHelper) {
-            updater.TryUpdateModel(part, Prefix, null, null);
-            part.ImageGalleryName = part.SelectedGallery;
+			updater.TryUpdateModel(part, Prefix, null, null);
+
+			part.ImageGalleryName = part.SelectedGallery;
+
             return Editor(part, shapeHelper);
         }
     }
