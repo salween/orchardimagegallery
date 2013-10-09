@@ -42,14 +42,13 @@ namespace Mello.ImageGallery.Drivers {
         }
 
         protected override DriverResult Display(ImageGalleryPart part, string displayType, dynamic shapeHelper) {
-            if (displayType == "SummaryAdmin")
-			{
-				// Image gallery returns nothing if in Summary Admin
-				return null;
-			}
+	        if (string.Equals(displayType, "SummaryAdmin", StringComparison.OrdinalIgnoreCase) &&
+	            string.Equals(displayType, "Summary", StringComparison.OrdinalIgnoreCase)) {
+		        // Image gallery returns nothing if in Summary Admin
+		        return null;
+	        }
 
-			if (!part.DisplayImageGallery || string.IsNullOrWhiteSpace(part.ImageGalleryName))
-			{
+	        if (!part.Record.DisplayImageGallery.GetValueOrDefault() || string.IsNullOrWhiteSpace(part.Record.ImageGalleryName)) {
 				return null;
 			}
 			
